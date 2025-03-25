@@ -54,7 +54,7 @@ const Verify = () => {
             {/* <Button title="Proceed" onPress={() => {RideDetails}} /> */}
             <Button
               title="Proceed"
-              onPress={() => navigation.navigate("User")}
+              onPress={() => navigation.navigate("DriverRegistration" as never)}
             />
 
             <Text style={styles.timerText}>

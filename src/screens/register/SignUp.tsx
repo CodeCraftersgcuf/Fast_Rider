@@ -27,19 +27,19 @@ const SignUp = () => {
           <Text style={styles.title}>Create an Account</Text>
           <Text style={styles.subtitle}>Create an account with your details</Text>
 
-          
+
 
           <View style={styles.form}>
 
 
-          <View style={styles.header}>
-            <Text style={styles.headerText}>Got an account ? <Text>Login Here </Text> </Text> 
+            <View style={styles.header}>
+              <Text style={styles.headerText}>Got an account ? <Text>Login Here </Text> </Text>
 
-            <TouchableOpacity onPress={() => navigation.navigate('Login')}
-              style={styles.loginButton}>
-              <Text style={styles.loginLink}>Login</Text>
-            </TouchableOpacity>
-          </View>
+              <TouchableOpacity onPress={() => navigation.navigate('Login' as never)}
+                style={styles.loginButton}>
+                <Text style={styles.loginLink}>Login</Text>
+              </TouchableOpacity>
+            </View>
 
 
 
@@ -76,8 +76,8 @@ const SignUp = () => {
               placeholder="Enter password"
             />
 
-            <Button 
-              title="Create an Account" 
+            <Button
+              title="Create an Account"
               onPress={() => navigation.navigate('Verify')}
             />
 
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     marginTop: 60,
-   
+
   },
   title: {
     fontSize: 40,
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     opacity: 0.8,
     marginBottom: 20,
   },
-  
+
   form: {
     backgroundColor: colors.secondary,
     borderRadius: 20,
@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 20,
     gap: 50
   },

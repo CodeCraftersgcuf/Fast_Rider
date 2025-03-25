@@ -14,7 +14,8 @@ import Login from "../screens/register/Login"
 import SignUp from "../screens/register/SignUp"
 import Verify from "../screens/register/Verify"
 import ChangePassword from "../screens/register/ChangePassword"
-
+import DriverRegistration from "../screens/register/DriverRegistration"
+import HelpCenter from "../screens/register/HelpCenter"
 // Home Screens
 import User from "../screens/Home/User"
 import ActiveDeliveries from "../screens/Home/ActiveDeliveries"
@@ -155,12 +156,16 @@ function AuthStack() {
       <Stack.Screen name="SignUp" component={SignUp} />
       <Stack.Screen name="Verify" component={Verify} />
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
+      <Stack.Screen name="DriverRegistration" component={DriverRegistration} />
+      <Stack.Screen name="HelpCenter" component={HelpCenter} />
+
+
     </Stack.Navigator>
   )
 }
 
 export function Navigation() {
-  const [isAuthenticated] = React.useState(true) // Replace with actual auth state
+  const [isAuthenticated] = React.useState(false) // Replace with actual auth state
 
   return (
     <NavigationContainer>

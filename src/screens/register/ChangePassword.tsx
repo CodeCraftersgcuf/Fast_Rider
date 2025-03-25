@@ -43,7 +43,7 @@ const ChangePassword = () => {
           <>
             <Text style={styles.subtitle}>Input email address</Text>
             <View style={styles.form}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.goBack}
                 onPress={() => navigation.goBack()}
               >
@@ -58,8 +58,8 @@ const ChangePassword = () => {
                 keyboardType="email-address"
               />
 
-              <Button 
-                title="Proceed" 
+              <Button
+                title="Proceed"
                 onPress={() => setCurrentStep('code')}
               />
             </View>
@@ -73,7 +73,7 @@ const ChangePassword = () => {
               Input the code sent to your registered email
             </Text>
             <View style={styles.form}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.goBack}
                 onPress={() => setCurrentStep('email')}
               >
@@ -82,8 +82,8 @@ const ChangePassword = () => {
 
               <CodeInput length={5} onCodeComplete={handleCodeComplete} />
 
-              <Button 
-                title="Proceed" 
+              <Button
+                title="Proceed"
                 onPress={() => setCurrentStep('password')}
               />
 
@@ -104,7 +104,7 @@ const ChangePassword = () => {
           <>
             <Text style={styles.subtitle}>Reset your password</Text>
             <View style={styles.form}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.goBack}
                 onPress={() => setCurrentStep('code')}
               >
@@ -125,9 +125,9 @@ const ChangePassword = () => {
                 placeholder="Re-enter new password"
               />
 
-              <Button 
-                title="Proceed" 
-                onPress={() => navigation.navigate('Login')}
+              <Button
+                title="Proceed"
+                onPress={() => navigation.navigate('Login' as never)}
               />
             </View>
           </>

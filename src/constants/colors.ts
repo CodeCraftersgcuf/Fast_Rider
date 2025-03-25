@@ -5,6 +5,7 @@
   background: {
     primary: '#800080',  
     secondary: '#F6F6F6', 
+    light: '#A61AA6'
   },
   gradient: {
     start: '#800080',
@@ -14,6 +15,7 @@
   black: '#000000',
   border: '#E0E0E0',
   grey: '#E4E4E4',
+  lightprimary: '#A61AA6',
   lightgrey: '#FFFFFF80',
   text: {
     primary: '#333333',

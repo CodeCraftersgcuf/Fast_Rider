@@ -1,13 +1,15 @@
 import React, { useRef, useState } from 'react';
-import { View, TextInput, StyleSheet } from 'react-native';
+import { View, TextInput, StyleSheet, NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
 import { colors } from '../constants/colors';
+import images from '../constants/images';
 
 interface CodeInputProps {
   length: number;
   onCodeComplete: (code: string) => void;
+  allowBackspace?: boolean; // ✅ optional
 }
 
-export const CodeInput: React.FC<CodeInputProps> = ({ length, onCodeComplete }) => {
+export const CodeInput: React.FC<CodeInputProps> = ({ length, onCodeComplete, allowBackspace = false }) => {
   const [code, setCode] = useState<string[]>(Array(length).fill(''));
   const inputRefs = useRef<TextInput[]>([]);
 
@@ -25,6 +27,20 @@ export const CodeInput: React.FC<CodeInputProps> = ({ length, onCodeComplete }) 
     }
   };
 
+  const handleKeyPress = (
+    e: NativeSyntheticEvent<TextInputKeyPressEventData>,
+    index: number
+  ) => {
+    if (
+      allowBackspace &&
+      e.nativeEvent.key === 'Backspace' &&
+      code[index] === '' &&
+      index > 0
+    ) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
   return (
     <View style={styles.container}>
       {Array(length).fill(0).map((_, index) => (
@@ -38,6 +54,7 @@ export const CodeInput: React.FC<CodeInputProps> = ({ length, onCodeComplete }) 
           keyboardType="numeric"
           value={code[index]}
           onChangeText={text => handleCodeChange(text, index)}
+          onKeyPress={e => handleKeyPress(e, index)} // ✅ backspace support
         />
       ))}
     </View>
