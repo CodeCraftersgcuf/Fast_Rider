@@ -17,7 +17,6 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabPress }) => {
   const tabs = [
     { name: "Home", icon: "home" },
     { name: "Deliveries", icon: "bicycle" },
-    { name: "Add", icon: "add", isMain: true },
     { name: "Chat", icon: "chatbubble" },
     { name: "Settings", icon: "settings" },
   ]
@@ -64,6 +63,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
     width: "91%",
+    marginBottom: theme.spacing.sm
   },
   tab: {
     flex: 1,

@@ -7,23 +7,41 @@ import { useNavigation } from "@react-navigation/native"
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import Icon from "react-native-vector-icons/Ionicons"
 import type { SendParcelStackParamList } from "../../types/navigation"
+import { RiderRequestPopup } from '../../components/RiderRequestPopup'
+import { DeliveryFeeModal } from "../../components/Delivery/DeliveryFeeModal"
 
 type SearchRidersNavigationProp = NativeStackNavigationProp<SendParcelStackParamList, "SearchRiders">
 
-export default function SearchRidersScreen({ route }: { route: { params: { amount: string } } }) {
+export default function SearchRidersScreen() {
   const navigation = useNavigation<SearchRidersNavigationProp>()
   const [isSearching, setIsSearching] = useState(true)
-  const { amount } = route.params
+  const [showFeeModal, setShowFeeModal] = useState(false)
+  const [amount, setAmount] = useState('');
 
-  useEffect(() => {
-    // Simulate finding riders after 3 seconds
-    const timer = setTimeout(() => {
-      setIsSearching(false)
-      navigation.navigate("RiderBid", { amount })
-    }, 3000)
+  const rider = {
+    name: "Maleek Oladimeji",
+    image: "https://randomuser.me/api/portraits/men/32.jpg",
+    rating: 4,
+    price: "2,500",
+    senderAddress: "No 1, alobalowo street, off saki iseyin express way, Iseyin,Oyo",
+    receiverAddress: "No 1, alobalowo street, off saki iseyin express way, Iseyin,Oyo",
+    eta: "5 min",
+    deliveryTime: "20 min",
 
-    return () => clearTimeout(timer)
-  }, [navigation, amount])
+    // 👇 Newly added fields for details section
+    senderName: "Qamardeen Malik",
+    senderPhone: "07030123456",
+    receiverName: "Adebisi Lateefat",
+    receiverPhone: "07031234567",
+    parcelName: "Samsung Phone",
+    parcelCategory: "Electronics",
+    parcelValue: "100,000 - 200,000",
+    description: "Nil",
+    payer: "Sender - Qamardeen Malik",
+    paymentMethod: "Wallet",
+    payOnDelivery: "No",
+    payOnDeliveryAmount: "NA",
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -31,7 +49,7 @@ export default function SearchRidersScreen({ route }: { route: { params: { amoun
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Icon name="chevron-back" size={24} color="#FFFFFF" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Searching</Text>
+        <Text style={styles.headerTitle}>Incoming Rider Request</Text>
         <View style={styles.headerRight} />
       </View>
 
@@ -41,12 +59,45 @@ export default function SearchRidersScreen({ route }: { route: { params: { amoun
           <View style={styles.circle2} />
           <View style={styles.circle3} />
           <View style={styles.searchIconContainer}>
-            <Icon name="search" size={40} color="#FFFFFF" />
           </View>
         </View>
 
-        <Text style={styles.searchingText}>Searching for available riders</Text>
       </View>
+      <RiderRequestPopup
+        name={rider.name}
+        avatar={rider.image}
+        rating={rider.rating}
+        price={rider.price}
+        senderAddress={rider.senderAddress}
+        receiverAddress={rider.receiverAddress}
+        eta={rider.eta}
+        deliveryTime={rider.deliveryTime}
+        onSendBid={() => setShowFeeModal(true)}
+        onAccept={() => navigation.navigate("Add", {
+          screen: "RidesSummary", // ✅ Must match this exactly!
+          params: {
+            rider,
+            amount: rider.price,
+          },
+        })}
+      />
+      <DeliveryFeeModal
+        visible={showFeeModal}
+        amount={amount}
+        onAmountChange={(val) => setAmount(val)}
+        onClose={() => setShowFeeModal(false)}
+        onConfirm={() => {
+          setShowFeeModal(false)
+          navigation.navigate("Add", {
+            screen: "RidesSummary", // ✅ Must match this exactly!
+            params: {
+              rider,
+              amount,
+            },
+          })
+        }}
+      />
+
     </SafeAreaView>
   )
 }

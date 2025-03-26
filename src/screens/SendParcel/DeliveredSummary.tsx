@@ -21,6 +21,7 @@ interface DeliverySummaryProps {
 }
 
 export default function DeliveredSummary({ route }: DeliverySummaryProps) {
+  console.log("Indse");
   const navigation = useNavigation<DeliverySummaryNavigationProp>()
   const [showRatingModal, setShowRatingModal] = useState(false)
   const [showMoreOptions, setShowMoreOptions] = useState(false)
@@ -28,7 +29,9 @@ export default function DeliveredSummary({ route }: DeliverySummaryProps) {
   const [review, setReview] = useState("")
   const { orderId, amount } = route.params
 
+
   const handleWriteReview = () => {
+    console.log("clicked");
     setShowRatingModal(true)
   }
 

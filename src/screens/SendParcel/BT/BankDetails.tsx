@@ -434,7 +434,7 @@ export default function BankTransferPayment({ route }: { route: { params: { amou
                   <Text style={styles.bankDetailValue}>1234567890</Text>
                   <TouchableOpacity style={styles.copyButton}>
                     <Icon name="copy-outline" size={20} color="#800080" />
-                  </TouchableOpacity>
+                  </TouchableOpacity>Bank Details
                 </View>
               </View>
               <View style={styles.bankDetail}>

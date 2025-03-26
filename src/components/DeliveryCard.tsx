@@ -5,6 +5,7 @@ import Icon from "react-native-vector-icons/Ionicons"
 import { colors } from "../constants/colors"
 import { theme } from "../constants/theme"
 import { formatTime } from "../utils/Fomatters"
+import images from "../constants/images"
 
 interface DeliveryCardProps {
   orderId: string
@@ -72,8 +73,8 @@ export function DeliveryCard({
                 style={[
                   styles.progressDot,
                   (status === "In Transit" && index <= 2) ||
-                  (status === "Picked up" && index <= 1) ||
-                  (status === "Delivered" && index <= 3)
+                    (status === "Picked up" && index <= 1) ||
+                    (status === "Delivered" && index <= 3)
                     ? styles.activeDot
                     : styles.inactiveDot,
                 ]}
@@ -87,8 +88,8 @@ export function DeliveryCard({
                   style={[
                     styles.progressLine,
                     (status === "In Transit" && index <= 1) ||
-                    (status === "Picked up" && index === 0) ||
-                    (status === "Delivered" && index <= 2)
+                      (status === "Picked up" && index === 0) ||
+                      (status === "Delivered" && index <= 2)
                       ? styles.activeLine
                       : styles.inactiveLine,
                   ]}
@@ -110,7 +111,7 @@ export function DeliveryCard({
           <Image source={require("../assets/images/pp.png")} style={styles.riderImage} />
           <View style={styles.riderDetails}>
             <Text style={styles.riderName}>{riderName}</Text>
-            <View style={styles.ratingContainer}>
+            {/* <View style={styles.ratingContainer}>
               {[...Array(5)].map((_, index) => (
                 <Icon
                   key={index}
@@ -119,15 +120,16 @@ export function DeliveryCard({
                   color={colors.primary}
                 />
               ))}
-            </View>
+            </View> */}
+            <Text style={styles.userPrice}>22,000</Text>
           </View>
         </View>
         <View style={styles.actionButtons}>
           <TouchableOpacity style={styles.actionButton} onPress={onChatPress}>
-            <Icon name="chatbubble-outline" size={20} color={colors.primary} />
+            <Image source={images.message} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionButton} onPress={onCallPress}>
-            <Icon name="call-outline" size={20} color={colors.primary} />
+            <Image source={images.battery} />
           </TouchableOpacity>
         </View>
       </View>
@@ -139,7 +141,8 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.white,
     borderRadius: theme.borderRadius.lg,
-    padding: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
+    paddingHorizontal:theme.spacing.lg,
     shadowColor: colors.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -235,6 +238,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     width: 70,
   },
+
   riderContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -252,6 +256,11 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 24,
     marginRight: theme.spacing.md,
+  },
+  userPrice: {
+    fontSize: 14,
+    color: colors.primary,
+    fontWeight: 'bold'
   },
   riderDetails: {
     gap: 4,
@@ -273,7 +282,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.grey,
     alignItems: "center",
     justifyContent: "center",
   },

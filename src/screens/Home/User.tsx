@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -23,7 +23,8 @@ import { formatCurrency } from "../../utils/Fomatters";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RootStackParamList } from "../../types";
-
+import { StatusToggle } from '../../components/StatusToggle';
+import images from "../../constants/images";
 type UserScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   "User"
@@ -34,6 +35,7 @@ export default function User() {
   const [balance, setBalance] = useState(200000);
   const [location, setLocation] = useState("Lagos, Ng");
   const [activeSlide, setActiveSlide] = useState(0);
+  const [isSearching, setIsSearching] = useState(true)
 
   const promotions = [
     {
@@ -42,21 +44,6 @@ export default function User() {
       description:
         "With Fast you get the best delivery service across the country",
       tag: "Fast Logistics",
-      imageUrl: "",
-    },
-    {
-      id: "2",
-      title: "Same day delivery guaranteed",
-      description:
-        "Get your packages delivered on the same day within city limits",
-      tag: "Express Delivery",
-      imageUrl: "",
-    },
-    {
-      id: "3",
-      title: "Affordable rates for all packages",
-      description: "Enjoy competitive pricing for all your delivery needs",
-      tag: "Best Rates",
       imageUrl: "",
     },
   ];
@@ -97,159 +84,149 @@ export default function User() {
     // Navigate to withdraw screen
   };
 
+  // useEffect(() => {
+  //   // Simulate finding riders after 3 seconds
+  //   const timer = setTimeout(() => {
+  //     setIsSearching(false)
+  //     navigation.navigate('Add', {
+  //       screen: 'SearchRiders',
+  //     })
+  //   }, 3000)
+
+  //   return () => clearTimeout(timer)
+  // }, [navigation])
   return (
-    <GradientBackground>
-      <SafeAreaView style={styles.safeArea}>
-        <ScrollView
-          style={styles.container}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.userInfo}>
-              <Image
-                source={require("../../assets/images/pp.png")}
-                style={styles.avatar}
-              />
-              <View style={styles.userDetails}>
-                <Text style={styles.greeting}>Hi, Qamardeen</Text>
-                <TouchableOpacity style={styles.locationContainer}>
-                  <Text style={styles.location}>{location}</Text>
-                  <Icon name="chevron-down" size={16} color={colors.white} />
+    <>
+      <StatusToggle />
+      <GradientBackground gradientType="half">
+        <SafeAreaView style={styles.safeArea}>
+          <ScrollView
+            style={styles.container}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Header */}
+            <View style={styles.header}>
+              <View style={styles.userInfo}>
+                <Image
+                  source={require("../../assets/images/user.png")}
+                  style={styles.avatar}
+                />
+                <View style={styles.userDetails}>
+                  <Text style={styles.greeting}>Hi, Qamardeen</Text>
+                  <TouchableOpacity style={styles.locationContainer}>
+                    <Text style={styles.location}>{location}</Text>
+                    <Icon name="chevron-down" size={16} color={colors.white} />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+            </View>
+
+            {/* Balance */}
+            <View style={styles.balanceContainer}>
+              <Text style={styles.balanceAmount}>{formatCurrency(balance)}</Text>
+              <View style={styles.balanceActions}>
+
+                <TouchableOpacity
+                  style={styles.balanceButton}
+                  onPress={handleWithdraw}
+                >
+                  <Image source={images.left_down_arrow} style={{ width: 10, marginRight: 5, }} />
+                  <Text style={styles.balanceButtonText}>Withdraw</Text>
                 </TouchableOpacity>
               </View>
             </View>
-            <TouchableOpacity style={styles.notificationButton}>
-              <Icon
-                name="notifications-outline"
-                size={24}
-                color={colors.white}
+
+            {/* Action Buttons */}
+            <View style={styles.actionButtons}>
+              <ActionButton
+                icon="bicycle"
+                label="Send Parcel"
+
+                onPress={() => handleActionPress("Send Parcel")}
               />
-            </TouchableOpacity>
-          </View>
-
-          {/* Balance */}
-          <View style={styles.balanceContainer}>
-            <Text style={styles.balanceAmount}>{formatCurrency(balance)}</Text>
-            <View style={styles.balanceActions}>
-              <TouchableOpacity
-                style={styles.balanceButton}
-                onPress={handleTopUp}
-              >
-                <Icon name="arrow-up" size={16} color={colors.text.primary} />
-                <Text style={styles.balanceButtonText}>Top Up</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.balanceButton}
-                onPress={handleWithdraw}
-              >
-                <Icon name="arrow-down" size={16} color={colors.text.primary} />
-                <Text style={styles.balanceButtonText}>Withdraw</Text>
-              </TouchableOpacity>
+              <ActionButton
+                icon="support-agent"
+                label="Support"
+                image="support"
+                onPress={() => handleActionPress("Track Parcel")}
+              />
+              <ActionButton
+                icon="time"
+                image="wallet"
+                label="Wallet"
+                onPress={() => handleParcelPress("Schedule")}
+              />
             </View>
-          </View>
 
-          {/* Action Buttons */}
-          <View style={styles.actionButtons}>
-            <ActionButton
-              icon="bicycle"
-              label="Send Parcel"
-              onPress={() => handleActionPress("Send Parcel")}
-            />
-            <ActionButton
-              icon="locate"
-              label="Track Parcel"
-              onPress={() => handleActionPress("Track Parcel")}
-            />
-            <ActionButton
-              icon="time"
-              label="Schedule"
-              onPress={() => handleParcelPress("Schedule")}
-            />
-          </View>
-
-          {/* Promotions */}
-          <View style={styles.promotionContainer}>
-            <ScrollView
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              onMomentumScrollEnd={(event) => {
-                const slideIndex = Math.floor(
-                  event.nativeEvent.contentOffset.x /
+            {/* Promotions */}
+            <View style={styles.promotionContainer}>
+              <ScrollView
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                onMomentumScrollEnd={(event) => {
+                  const slideIndex = Math.floor(
+                    event.nativeEvent.contentOffset.x /
                     event.nativeEvent.layoutMeasurement.width
-                );
-                setActiveSlide(slideIndex);
+                  );
+                  setActiveSlide(slideIndex);
+                }}
+              >
+                {promotions.map((promo) => (
+                  <View key={promo.id} style={styles.promotionSlide}>
+                    <PromotionCard
+                      title={promo.title}
+                      description={promo.description}
+                      tag={promo.tag}
+                      imageUrl={promo.imageUrl}
+                    />
+                  </View>
+                ))}
+              </ScrollView>
+
+            </View>
+            <View
+              style={{
+                backgroundColor: '#FEEBCB',
+                padding: 12,
+                borderRadius: 8,
+                marginBottom: 16,
+                flexDirection: 'row',
+                flexWrap: 'wrap',  // Allow the content to wrap instead of overflowing
+                alignItems: 'center', // Optional: Ensures proper vertical alignment of items
+                borderColor: '#FFA50033',
+                borderWidth: 1,
               }}
             >
-              {promotions.map((promo) => (
-                <View key={promo.id} style={styles.promotionSlide}>
-                  <PromotionCard
-                    title={promo.title}
-                    description={promo.description}
-                    tag={promo.tag}
-                    imageUrl={promo.imageUrl}
-                  />
-                </View>
-              ))}
-            </ScrollView>
-            <View style={styles.paginationContainer}>
-              {promotions.map((_, index) => (
-                <View
-                  key={index}
-                  style={[
-                    styles.paginationDot,
-                    index === activeSlide && styles.paginationDotActive,
-                  ]}
-                />
-              ))}
+              <View style={{ flex: 1 }}>  {/* Ensure text takes available space */}
+                <Text style={{ color: colors.black }}>
+                  Your account is under review, you will be able to receive ride request once you have verified and you have paid for your tier.
+                </Text>
+              </View>
             </View>
-          </View>
 
-          {/* Pickup Locations */}
-          <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>Pickup Locations</Text>
-    
-           <View style={styles.locationsContainer}>
-              <View style={styles.locationsButton}>
-                <LocationCard
-                  type="Home"
-                  address="Set home address"
-                  onPress={() => handleLocationPress("Home")}
-                />
-               </View>
-
-              <View style={styles.locationsButton}>
-                <LocationCard
-                  type="Work"
-                  address="Set work address"
-                  onPress={() => handleLocationPress("Work")}
-                />
-               </View>
-             </View>
-          
-          </View>
-
-          {/* Active Deliveries */}
-          <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>Active Deliveries</Text>
-            <DeliveryCard
-              orderId="ORD-12ESCJK3K"
-              status="In Transit"
-              fromAddress="No 1, abcd street..."
-              toAddress="No 1, abcd street..."
-              orderTime={new Date("2023-02-23T11:24:00")}
-              estimatedDelivery={new Date("2023-02-23T13:22:00")}
-              riderName="Maleek Oladimeji"
-              riderRating={5}
-              onPress={() => handleDeliveryPress("ORD-12ESCJK3K")}
-              onChatPress={() => console.log("Chat with rider")}
-              onCallPress={() => console.log("Call rider")}
-            />
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </GradientBackground>
+            {/* Active Deliveries */}
+            <View style={styles.sectionContainer}>
+              <Text style={styles.sectionTitle}>Active Deliveries</Text>
+              <DeliveryCard
+                orderId="ORD-12ESCJK3K"
+                status="In Transit"
+                fromAddress="No 1, abcd street..."
+                toAddress="No 1, abcd street..."
+                orderTime={new Date("2023-02-23T11:24:00")}
+                estimatedDelivery={new Date("2023-02-23T13:22:00")}
+                riderName="Maleek Oladimeji"
+                riderRating={5}
+                onPress={() => handleDeliveryPress("ORD-12ESCJK3K")}
+                onChatPress={() => console.log("Chat with rider")}
+                onCallPress={() => console.log("Call rider")}
+              />
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </GradientBackground>
+    </>
   );
 }
 
@@ -261,7 +238,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: theme.spacing.md,
-    marginTop: theme.spacing.xl,
+    marginTop: theme.spacing.sm,
   },
   header: {
     flexDirection: "row",
@@ -306,10 +283,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   balanceContainer: {
-    marginBottom: theme.spacing.xl,
+    marginBottom: theme.spacing.sm,
     display: "flex",
     flexDirection: "row",
     gap: theme.spacing.lg,
+    justifyContent: 'space-between'
   },
   balanceAmount: {
     fontSize: 35,
@@ -341,14 +319,13 @@ const styles = StyleSheet.create({
   actionButtons: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: theme.spacing.xl,
+    marginBottom: theme.spacing.md,
   },
   promotionContainer: {
-    marginBottom: theme.spacing.xl,
+    marginBottom: theme.spacing.sm,
   },
   promotionSlide: {
-    width: 320,
-    paddingRight: theme.spacing.md,
+    width: 340,
   },
   paginationContainer: {
     flexDirection: "row",

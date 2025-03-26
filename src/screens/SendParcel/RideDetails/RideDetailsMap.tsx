@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,14 +9,37 @@ import {
   Image,
   ImageStyle,
   Platform,
+  Animated,
+  Easing,
+  Modal,
+  TextInput
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MapView, { Polyline, Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import Icon from "react-native-vector-icons/Ionicons";
 import { icons } from "../../../constants/icons";
 import imageSource from '../../../assets/images/pp.png';
+import { colors } from "../../../constants/colors";
+import ActButton from "../../../components/ActButton";
+import images from "../../../constants/images";
+import { useNavigation } from '@react-navigation/native';
+import ConfirmationModals from "../../../components/ConfirmationModals";
+import { ContactReceiverPopup } from "../../../components/ContactReceiverPopup";
+import { useRoute } from "@react-navigation/native";
 
+type RouteParams = {
+  rider?: any;
+  amount?: string;
+};
 export default function RideDetails() {
+  const navigation = useNavigation();
+
+  const route = useRoute();
+  const { rider, amount } = route.params as RouteParams ?? {};
+
+  console.log("Rider:", rider);
+  console.log("Amount:", amount);
+
   const routeCoordinates = [
     { latitude: 40.7359, longitude: -73.9911 },
     { latitude: 40.742, longitude: -73.9885 },
@@ -24,7 +47,97 @@ export default function RideDetails() {
     { latitude: 40.755, longitude: -73.981 },
     { latitude: 40.7616, longitude: -73.9773 },
   ];
+  const [deliveryStatus, setDeliveryStatus] = useState<"In Transit" | "Delivered">("In Transit")
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false)
+  const [confirmationCode, setConfirmationCode] = useState("")
 
+  const cursorOpacity = useState(new Animated.Value(1))[0]
+
+  const [showPaymentConfirmation, setShowPaymentConfirmation] = useState(false)
+  const [codeConfirmation, setCodeConfirmation] = useState(false)
+
+  const [customerDetailModal, setCustomerDetailModal] = useState(false);
+
+  const [showRequestButton, setShowRequestButton] = useState(false);
+  const [showActButton, setShowActButton] = useState(true);
+  const [actButtonLabel, setActButtonLabel] = useState("I have arrived for pickup");
+  const [requestButtonDisabled, setRequestButtonDisabled] = useState(true);
+
+  const handleProceed = () => {
+    console.log("It clicked");
+    setShowConfirmationModal(true);
+  }
+
+  const onChatPress = () => {
+    console.log("It clicked")
+    navigation.navigate("Add", {
+      screen: "Chat",
+      params: { id: "2" },
+    })
+  }
+
+  useEffect(() => {
+    const blinkCursor = Animated.loop(
+      Animated.sequence([
+        Animated.timing(cursorOpacity, {
+          toValue: 0,
+          duration: 500,
+          easing: Easing.ease,
+          useNativeDriver: true,
+        }),
+        Animated.timing(cursorOpacity, {
+          toValue: 1,
+          duration: 500,
+          easing: Easing.ease,
+          useNativeDriver: true,
+        }),
+      ]),
+    )
+
+    if (showConfirmationModal) {
+      blinkCursor.start()
+    } else {
+      blinkCursor.stop()
+    }
+
+    return () => {
+      blinkCursor.stop()
+    }
+  }, [showConfirmationModal, cursorOpacity])
+
+  const handleConfirmCode = () => {
+    setShowConfirmationModal(false)
+    setShowPaymentConfirmation(true)
+
+    if (actButtonLabel === "I have arrived for pickup") {
+      setActButtonLabel("Complete Delivery");
+      setShowRequestButton(true);
+    } else {
+      setShowActButton(false);
+      setRequestButtonDisabled(false);
+    }
+
+    setCodeConfirmation(true);
+  }
+
+  const handleConfirmationClose = () => {
+    setShowPaymentConfirmation(false)
+  }
+
+  const handleDummy = () => {
+    console.log("Clicked");
+  }
+
+  const handleRetype = () => {
+    console.log("It cliced/");
+    setShowPaymentConfirmation(false)
+    setCodeConfirmation(false);
+    setShowConfirmationModal(true)
+  }
+  const handleNextScreen = () => {
+    console.log("Moving to the next Screen");
+    navigation.navigate('BankTransferPayment')
+  }
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -75,14 +188,18 @@ export default function RideDetails() {
           </View>
 
           <View style={styles.orderDetails}>
-            <Text style={styles.sectionTitle}>Order id</Text>
-            <Text style={styles.orderId}>ORD-12ESCJK3K</Text>
+            {/* Order ID Section */}
+            <View style={{ alignItems: "center", flexDirection: "column", justifyContent: "center" }}>
+              <Text style={styles.sectionTitle}>Order id</Text>
+              <Text style={styles.orderId}>ORD-12ESCJK3K</Text>
+            </View>
 
+            {/* Address Details */}
             <View style={styles.locationContainer}>
               <View style={styles.locationItem}>
                 <Text style={styles.locationLabel}>From</Text>
                 <Text style={styles.locationText} numberOfLines={1}>
-                  No 1, abcd street...
+                  {rider?.senderAddress ?? "N/A"}
                 </Text>
                 <View style={styles.timeContainer}>
                   <Text style={styles.timeLabel}>Time of Order</Text>
@@ -93,83 +210,74 @@ export default function RideDetails() {
               <View style={styles.locationItem}>
                 <Text style={styles.locationLabel}>To</Text>
                 <Text style={styles.locationText} numberOfLines={1}>
-                  No 1, abcd street, saki...
+                  {rider?.receiverAddress ?? "N/A"}
                 </Text>
                 <View style={styles.timeContainer}>
                   <Text style={styles.timeLabel}>Estimated Delivery</Text>
-                  <Text style={styles.timeValue}>01:22 PM</Text>
+                  <Text style={styles.timeValue}>{rider?.deliveryTime ?? "N/A"}</Text>
                 </View>
               </View>
             </View>
 
+            {/* Payment Details */}
             <View style={styles.paymentContainer}>
               <View style={styles.paymentItem}>
                 <Text style={styles.paymentLabel}>Sub total</Text>
-                <Text style={styles.paymentValue}>₦ 22,000</Text>
+                <Text style={styles.paymentValue}>₦ {amount ?? "0"}</Text>
               </View>
               <View style={styles.paymentItem}>
                 <Text style={styles.paymentLabel}>Payment method</Text>
-                <Text style={styles.paymentValue}>Wallet</Text>
+                <Text style={styles.paymentValue}>{rider?.paymentMethod ?? "N/A"}</Text>
               </View>
             </View>
 
-            <TouchableOpacity style={styles.historyButton}>
-              <Text style={styles.historyButtonText}>View full history</Text>
-            </TouchableOpacity>
+            {/* View History & Customer Details */}
+            <View style={styles.historyCustomerContainer}>
+              <TouchableOpacity>
+                <Text style={styles.historyButtonText}>View full history</Text>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Text style={styles.customerDetailsText}>Customer details</Text>
+              </TouchableOpacity>
+            </View>
 
+            {/* Order Progress Timeline */}
             <View style={styles.timeline}>
-              {["Order", "Picked up", "In transit", "Delivered"].map(
-                (step, index) => (
-                  <View key={step} style={styles.timelineItem}>
-                    <View
-                      style={[
-                        styles.timelineDot,
-                        index <= 2 ? styles.activeDot : styles.inactiveDot,
-                      ]}
-                    />
-                    <Text
-                      style={[
-                        styles.timelineText,
-                        index <= 2 ? styles.activeText : styles.inactiveText,
-                      ]}
-                    >
-                      {step}
-                    </Text>
-                  </View>
-                )
-              )}
+              {["Order", "Picked up", "In transit", "Delivered"].map((step, index) => (
+                <View key={step} style={styles.timelineItem}>
+                  <View style={[styles.timelineDot, index <= 2 ? styles.activeDot : styles.inactiveDot]} />
+                  <Text style={[styles.timelineText, index <= 2 ? styles.activeText : styles.inactiveText]}>
+                    {step}
+                  </Text>
+                </View>
+              ))}
             </View>
           </View>
+
+
         </View>
 
         <View style={styles.profileCard}>
           <View style={styles.profileInfo}>
             <Image
-              source={imageSource} 
+              source={imageSource}
               style={styles.profileImage}
             />
             <View>
               <Text style={styles.riderName}>Maleek Oladimeji</Text>
-              <View style={styles.ratingContainer}>
-                {[1, 2, 3, 4].map((star) => (
-                  <Icon key={star} name={icons.star} size={16} color="#fff" />
-                ))}
-                <Icon
-                  name={icons.star}
-                  size={16}
-                  color="rgba(255,255,255,0.5)"
-                />
+              <View>
+                <Text style={styles.userPrice}>N 22,500</Text>
               </View>
             </View>
           </View>
-          <View style={styles.actionButtons}>
-            <TouchableOpacity style={styles.actionButton}>
+          <View style={styles.actionButtons} >
+            <TouchableOpacity style={styles.actionButton} onPress={onChatPress}>
               <Image
                 source={icons.chats}
                 style={styles.actionIcon as ImageStyle}
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
+            <TouchableOpacity style={styles.actionButton} onPress={() => setCustomerDetailModal(true)}>
               <Image
                 source={icons.phoneb}
                 style={styles.actionIcon as ImageStyle}
@@ -178,21 +286,53 @@ export default function RideDetails() {
           </View>
         </View>
       </ScrollView>
-
-      <TouchableOpacity style={styles.trackButton}>
-        <View style={styles.trackButtonLeft}>
-          <View style={styles.bikeButton}>
-            <Icon name={icons.bike} size={24} color="white" />
-          </View>
-
-          <Text style={styles.trackButtonText}>Track Parcel</Text>
+      {showActButton && (
+        <View style={{ paddingHorizontal: 20 }}>
+          <ActButton
+            icon="bicycle"
+            label={actButtonLabel}
+            onPress={handleProceed}
+          />
         </View>
-        <Image
-          source={icons.chevronTriple}
-          style={styles.chevronIcon as ImageStyle}
-        />
-      </TouchableOpacity>
-    </SafeAreaView>
+      )}
+
+      {showRequestButton && (
+        <View style={{ paddingHorizontal: 20, marginVertical: 10 }}>
+          <TouchableOpacity
+            style={[
+              styles.continueButton,
+              requestButtonDisabled && styles.disabledButton
+            ]}
+            onPress={handleNextScreen}
+            disabled={requestButtonDisabled}
+          >
+            <Text style={styles.continueButtonText}>Request payment</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      <ContactReceiverPopup
+        visible={customerDetailModal}
+        onClose={() => setCustomerDetailModal(false)}
+        name="Adebisi Lateefat"
+        phone="070312345678"
+        address="No 2, adcfdgt street, isdf, frgty"
+        onCall={() => console.log("Calling the Customer...")}
+      />
+
+      <ConfirmationModals
+        showConfirmationModal={showConfirmationModal}
+        setShowConfirmationModal={setShowConfirmationModal}
+        confirmationCode={confirmationCode}
+        setConfirmationCode={setConfirmationCode}
+        handleConfirmCode={handleConfirmCode}
+        cursorOpacity={cursorOpacity}
+        showPaymentConfirmation={showPaymentConfirmation}
+        handleConfirmationClose={handleConfirmationClose}
+        codeConfirmation={codeConfirmation}
+        handleDummy={handleDummy}
+        handleRetype={handleRetype}
+      />
+    </SafeAreaView >
   );
 }
 
@@ -268,15 +408,18 @@ const styles = StyleSheet.create({
   },
   orderId: {
     fontSize: 20,
-    fontWeight: "600",
+    fontWeight: "bold",
+    textAlign: "center",
     color: "#000",
     marginBottom: 24,
   },
   locationContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 24,
   },
   locationItem: {
-    marginBottom: 16,
+    flex: 1,
   },
   locationLabel: {
     fontSize: 13,
@@ -290,7 +433,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   timeContainer: {
-    flexDirection: "row",
+    flexDirection: "column",
+    gap: 4,
     justifyContent: "space-between",
   },
   timeLabel: {
@@ -303,12 +447,13 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   paymentContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 24,
   },
   paymentItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 8,
+    flex: 1,
+    gap: 3,
   },
   paymentLabel: {
     fontSize: 13,
@@ -319,14 +464,52 @@ const styles = StyleSheet.create({
     color: "#000",
     fontWeight: "500",
   },
-  historyButton: {
-    alignItems: "center",
-    paddingVertical: 8,
+  historyCustomerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16,
+    marginHorizontal: 20
   },
   historyButtonText: {
     color: "#9C27B0",
     fontSize: 14,
     fontWeight: "500",
+    textDecorationLine: 'underline',
+  },
+  customerDetailsText: {
+    color: "#9C27B0",
+    fontSize: 14,
+    fontWeight: "500",
+    textDecorationLine: 'underline',
+
+  },
+  customerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  customerImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 12,
+  },
+  customerInfo: {
+    flexDirection: "column",
+  },
+  customerName: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#000",
+  },
+  customerPrice: {
+    fontSize: 13,
+    color: "#666",
+  },
+  userPrice: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    color: colors.primary,
   },
   timeline: {
     flexDirection: "row",
@@ -345,6 +528,8 @@ const styles = StyleSheet.create({
     height: 12,
     borderRadius: 6,
   },
+
+
   activeDot: {
     backgroundColor: "#9C27B0",
   },
@@ -365,7 +550,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: "#9C27B0",
+    backgroundColor: colors.grey,
     padding: 16,
     margin: 16,
     borderRadius: 16,
@@ -383,7 +568,7 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.3)",
   },
   riderName: {
-    color: "#fff",
+    color: colors.black,
     fontSize: 16,
     fontWeight: "600",
     marginBottom: 4,
@@ -442,5 +627,20 @@ const styles = StyleSheet.create({
     width: 30,
     height: 24,
     tintColor: "#800080",
+  },
+  continueButton: {
+    backgroundColor: "#800080",
+    paddingVertical: 16,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  continueButtonText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#FFFFFF",
+  },
+  disabledButton: {
+    backgroundColor: '#800080', // example disabled button color
+    opacity: 0.5, // slightly transparent
   },
 });

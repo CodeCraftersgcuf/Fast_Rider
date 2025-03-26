@@ -2,7 +2,7 @@
 
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   View,
   Text,
@@ -19,6 +19,7 @@ import { useNavigation } from "@react-navigation/native"
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import Icon from "react-native-vector-icons/Ionicons"
 import type { RootStackParamList } from "../../types/navigation"
+import { useRoute } from "@react-navigation/native"
 
 type ChatScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Chat">
 
@@ -39,9 +40,15 @@ interface Message {
 }
 
 export default function ChatScreen() {
+  const route = useRoute()
+  const id = route.params?.id ?? null
+
+  console.log("Chat ID:", id)
   const navigation = useNavigation<ChatScreenNavigationProp>()
   const [activeChat, setActiveChat] = useState<ChatItem | null>(null)
   const [messageText, setMessageText] = useState("")
+  const idFromRoute = route.params?.id ?? null
+
   const [messages, setMessages] = useState<Record<string, Message[]>>({
     "1": [
       { id: "1", text: "Hello, I'm on my way to pick up your package", sender: "rider", timestamp: "10:30 AM" },
@@ -129,7 +136,13 @@ export default function ChatScreen() {
       unreadCount: 2,
     },
   ])
-
+  // ✅ Automatically activate chat if ID is passed
+  useEffect(() => {
+    if (idFromRoute) {
+      const foundChat = chats.find((chat) => chat.id === idFromRoute)
+      if (foundChat) setActiveChat(foundChat)
+    }
+  }, [idFromRoute, chats])
   const handleSendMessage = () => {
     if (!messageText.trim() || !activeChat) return
 

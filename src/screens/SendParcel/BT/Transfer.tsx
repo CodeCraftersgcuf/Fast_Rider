@@ -1,11 +1,13 @@
 "use client"
 
 import React, { useState } from "react"
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Modal, ActivityIndicator, ScrollView } from "react-native"
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Modal, ActivityIndicator, ScrollView, Image } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import Icon from "react-native-vector-icons/Ionicons"
 import type { SendParcelStackParamList } from "../../../types/navigation"
+import images from "../../../constants/images"
+
 
 type BankTransferPaymentNavigationProp = NativeStackNavigationProp<SendParcelStackParamList, "BankTransferPayment">
 
@@ -16,6 +18,7 @@ interface BankDetailsProps {
 }
 
 interface PaymentBreakdownProps {
+  userAmount: number
   deliveryFee: number
   total: number
 }
@@ -32,6 +35,7 @@ export default function BankTransferPayment() {
   }
 
   const paymentBreakdown: PaymentBreakdownProps = {
+    userAmount: 20000,
     deliveryFee: 2000,
     total: 22000,
   }
@@ -46,9 +50,11 @@ export default function BankTransferPayment() {
   }
 
   const handleConfirmationClose = () => {
-    setShowConfirmation(false)
-    navigation.navigate("RideSummary", { paymentStatus: "completed" })
-  }
+    setShowConfirmation(false);
+    console.log("object");
+
+    navigation.navigate("RideSummary"); // 🔥 This works
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -79,7 +85,7 @@ export default function BankTransferPayment() {
             </View>
           </View>
           <View style={styles.warningContainer}>
-            <Icon name="alert-triangle" size={16} color="#FF9800" />
+            <Image source={images.warning} />
             <Text style={styles.warningText}>Kindly note that this account can be used only once</Text>
           </View>
         </View>
@@ -88,19 +94,25 @@ export default function BankTransferPayment() {
         <Text style={styles.sectionTitle}>Payment Breakdown</Text>
         <View style={styles.card}>
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Delivery fee</Text>
-            <Text style={styles.detailValue}>{paymentBreakdown.deliveryFee.toLocaleString()}</Text>
+            <Text style={styles.detailLabel}>User Amount - Pay on delivery</Text>
+            <Text style={styles.detailValue}>{paymentBreakdown.userAmount}</Text>
           </View>
-          <View style={styles.divider} />
           <View style={styles.detailRow}>
-            <Text style={styles.totalLabel}>Total</Text>
-            <Text style={styles.totalValue}>{paymentBreakdown.total.toLocaleString()}</Text>
+            <Text style={styles.detailLabel}>Delivery Fee</Text>
+            <Text style={styles.detailValue}>{paymentBreakdown.deliveryFee}</Text>
           </View>
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Total</Text>
+            <View style={styles.accountNumberContainer}>
+              <Text style={styles.detailValue}>{paymentBreakdown.total}</Text>
+            </View>
+          </View>
+
         </View>
       </ScrollView>
 
-      <TouchableOpacity 
-        style={styles.paymentButton} 
+      <TouchableOpacity
+        style={styles.paymentButton}
         onPress={handlePaymentMade}
         disabled={isLoading}
       >
@@ -122,9 +134,9 @@ export default function BankTransferPayment() {
             <TouchableOpacity style={styles.closeButton} onPress={handleConfirmationClose}>
               <Icon name="close" size={24} color="#000000" />
             </TouchableOpacity>
-            
+
             <Text style={styles.modalTitle}>Payment Confirmation</Text>
-            
+
             <View style={styles.successIconContainer}>
               <View style={styles.successIconOuter}>
                 <View style={styles.successIconInner}>
@@ -132,7 +144,7 @@ export default function BankTransferPayment() {
                 </View>
               </View>
             </View>
-            
+
             <Text style={styles.confirmationText}>
               Your payment has been received, now you can proceed to complete your rider request
             </Text>

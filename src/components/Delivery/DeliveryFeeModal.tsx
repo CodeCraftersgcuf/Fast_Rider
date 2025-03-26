@@ -23,8 +23,7 @@ export function DeliveryFeeModal({ visible, onClose, onConfirm, amount, onAmount
     // First confirm the amount
     onConfirm()
 
-    // Then navigate to search riders screen
-    navigation.navigate("SearchRiders", { amount })
+
   }
 
   return (

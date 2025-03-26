@@ -20,11 +20,14 @@ export const PromotionCard: React.FC<PromotionCardProps> = ({ title, description
         <View style={styles.textContainer}>
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.description}>{description}</Text>
+
         </View>
-        <Image
-          source={imageUrl ? { uri: imageUrl } : require("../assets/images/deliveryman.png")}
-          style={styles.image}
-        />
+        <View style={styles.imageContainer}>
+          <Image
+            source={imageUrl ? { uri: imageUrl } : require("../assets/images/deliveryman.png")}
+            style={styles.image}
+          />
+        </View>
       </View>
     </View>
   )
@@ -53,10 +56,12 @@ const styles = StyleSheet.create({
   contentContainer: {
     flexDirection: "row",
     padding: theme.spacing.md,
+    flexWrap: "wrap"
   },
   textContainer: {
     flex: 1,
     paddingRight: theme.spacing.md,
+
   },
   title: {
     fontSize: theme.fontSizes.lg,
@@ -69,10 +74,12 @@ const styles = StyleSheet.create({
     color: colors.white,
     opacity: 0.8,
   },
+  imageContainer: {
+    alignItems: 'flex-start',
+  },
   image: {
-    width: 80,
-    height: 80,
-    resizeMode: "contain",
+    width: 90,
+    height: 90,
   },
 })
 

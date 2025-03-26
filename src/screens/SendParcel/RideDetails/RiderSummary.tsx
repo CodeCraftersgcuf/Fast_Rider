@@ -9,6 +9,8 @@ import {
   Image,
   ImageStyle,
   Platform,
+  Modal,
+
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -40,6 +42,36 @@ const deliveryDetails = {
     { label: "Delivery", value: "N2,000" },
   ],
 };
+const ReviewItem = ({
+  name,
+  rating,
+  date,
+  comment,
+}: { name: string; rating: number; date: string; comment: string }) => (
+  <View style={styles.reviewItem}>
+    <View style={styles.reviewHeader}>
+      <View style={styles.reviewerInfo}>
+        <Text style={styles.reviewerName}>{name}</Text>
+        <View style={styles.reviewRating}>
+          {[1, 2, 3, 4, 5].map((star) => (
+            <Icon key={star} name={rating >= star ? "star" : "star-outline"} size={16} color="#800080" />
+          ))}
+          <Text style={styles.reviewDate}>{date}</Text>
+        </View>
+      </View>
+    </View>
+    {comment ? <Text style={styles.reviewComment}>{comment}</Text> : null}
+  </View>
+)
+const RatingStat = ({ number, percentage }: { number: number; percentage: number }) => (
+  <View style={styles.ratingStat}>
+    <Text style={styles.ratingStatNumber}>{number} ★</Text>
+    <View style={styles.ratingStatBar}>
+      <View style={[styles.ratingStatFill, { width: `${percentage}%` }]} />
+    </View>
+    <Text style={styles.ratingStatPercentage}>{percentage}%</Text>
+  </View>
+)
 
 export default function RideSummary() {
   const [isDeliverySummaryExpanded, setIsDeliverySummaryExpanded] =
@@ -52,10 +84,23 @@ export default function RideSummary() {
   const receiverAddress =
     "No 1, alobalowo street, off saki iseyin express way, Iseyin,Oyo";
 
+  const [showRatingModal, setShowRatingModal] = useState(false)
+  const [rating, setRating] = useState(0)
+
+
+  const handleWriteReview = () => {
+    console.log("clicked");
+    setShowRatingModal(true)
+  }
+  const handleRatingComplete = () => {
+    setShowRatingModal(false)
+    // Navigate to home screen after rating
+    navigation.navigate("Home")
+  }
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <View style={styles.header}>
-        
+
 
         <TouchableOpacity
           style={styles.headerButton}
@@ -197,10 +242,61 @@ export default function RideSummary() {
         </View>
 
         <DeliveryTimeline />
-
-        <TouchableOpacity style={styles.reviewButton}>
+        <TouchableOpacity style={styles.reviewButton} onPress={handleWriteReview}>
           <Text style={styles.reviewButtonText}>Write a review</Text>
         </TouchableOpacity>
+
+        {/* Rating Modal */}
+        <Modal visible={showRatingModal} transparent animationType="slide">
+          <View style={styles.modalContainer}>
+            <View style={styles.ratingModalContent}>
+              <View style={styles.ratingModalHeader}>
+                <Text style={styles.ratingModalTitle}>Rate your delivery experience</Text>
+                <TouchableOpacity onPress={() => setShowRatingModal(false)}>
+                  <Icon name="close" size={24} color="#000000" />
+                </TouchableOpacity>
+              </View>
+
+              <Text style={styles.ratingNumber}>{rating}</Text>
+
+              <View style={styles.starsContainer}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <TouchableOpacity key={star} onPress={() => setRating(star)}>
+                    <Icon
+                      name={rating >= star ? "star" : "star-outline"}
+                      size={40}
+                      color={rating >= star ? "#800080" : "#CCCCCC"}
+                    />
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Text style={styles.reviewsCount}>3,000 Reviews</Text>
+
+              <View style={styles.ratingStats}>
+                <RatingStat number={5} percentage={80} />
+                <RatingStat number={4} percentage={10} />
+                <RatingStat number={3} percentage={5} />
+                <RatingStat number={2} percentage={3} />
+                <RatingStat number={1} percentage={2} />
+              </View>
+
+              <View style={styles.reviewsList}>
+                <ReviewItem name="Qamardeen Abdul Malik" rating={4} date="23/02/2025" comment="The guy was very nice" />
+                <ReviewItem
+                  name="Qamardeen Abdul Malik"
+                  rating={4}
+                  date="23/02/2025"
+                  comment="It was delivered on time"
+                />
+              </View>
+
+              <TouchableOpacity style={styles.submitButton} onPress={handleRatingComplete}>
+                <Text style={styles.submitButtonText}>Submit Review</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </ScrollView>
     </SafeAreaView>
   );
@@ -449,5 +545,125 @@ const styles = StyleSheet.create({
   },
   receiverContainer: {
     marginTop: theme.spacing.sm,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "white",
+  },
+  ratingModalContent: {
+    flex: 1,
+    padding: 16,
+  },
+  ratingModalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#EEEEEE",
+  },
+  ratingModalTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#000000",
+    flex: 1,
+  },
+  ratingNumber: {
+    fontSize: 48,
+    fontWeight: "700",
+    color: "#333333",
+    textAlign: "center",
+    marginVertical: 16,
+  },
+  starsContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginBottom: 8,
+  },
+  reviewsCount: {
+    fontSize: 14,
+    color: "#666666",
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  ratingStats: {
+    marginBottom: 24,
+  },
+  ratingStat: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  ratingStatNumber: {
+    width: 30,
+    fontSize: 14,
+    color: "#333333",
+  },
+  ratingStatBar: {
+    flex: 1,
+    height: 8,
+    backgroundColor: "#EEEEEE",
+    borderRadius: 4,
+    marginHorizontal: 8,
+  },
+  ratingStatFill: {
+    height: 8,
+    backgroundColor: "#4CAF50",
+    borderRadius: 4,
+  },
+  ratingStatPercentage: {
+    width: 40,
+    fontSize: 14,
+    color: "#333333",
+    textAlign: "right",
+  },
+  reviewsList: {
+    flex: 1,
+    marginBottom: 16,
+  },
+  reviewItem: {
+    marginBottom: 16,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#EEEEEE",
+  },
+  reviewHeader: {
+    flexDirection: "row",
+    marginBottom: 8,
+  },
+  reviewerInfo: {
+    flex: 1,
+  },
+  reviewerName: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333333",
+  },
+  reviewRating: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+  },
+  reviewDate: {
+    fontSize: 12,
+    color: "#666666",
+    marginLeft: 8,
+  },
+  reviewComment: {
+    fontSize: 14,
+    color: "#333333",
+    lineHeight: 20,
+  },
+  submitButton: {
+    backgroundColor: "#800080",
+    padding: 16,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 16,
+  },
+  submitButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

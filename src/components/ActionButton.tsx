@@ -1,25 +1,32 @@
-import type React from "react"
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
-import Icon from "react-native-vector-icons/Ionicons"
-import { colors } from "../constants/colors"
-import { theme } from "../constants/theme"
+import type React from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import Icon from "react-native-vector-icons/Ionicons";
+import { colors } from "../constants/colors";
+import { theme } from "../constants/theme";
+import images from "../constants/images";
 
 interface ActionButtonProps {
-  icon: string
-  label: string
-  onPress: () => void
+  icon: string;
+  label: string;
+  onPress: () => void;
+  image?: string;
 }
 
-export const ActionButton: React.FC<ActionButtonProps> = ({ icon, label, onPress }) => {
+export const ActionButton: React.FC<ActionButtonProps> = ({ icon, label, onPress, image }) => {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <View style={styles.iconContainer}>
-        <Icon name={icon} size={24} color={colors.white} />
+        {/* If image prop is passed, render the image, else render the icon */}
+        {image ? (
+          <Image source={images[image]} style={styles.iconImage} />
+        ) : (
+          <Icon name={icon} size={24} color={colors.white} />
+        )}
       </View>
       <Text style={styles.label}>{label}</Text>
     </TouchableOpacity>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -50,5 +57,9 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
     fontWeight: "500",
   },
-})
-
+  iconImage: {
+    width: 24, // Adjust the width and height to make the image fit
+    height: 24, // Adjust the width and height to make the image fit
+    resizeMode: "contain", // Ensure the image doesn't stretch and maintains aspect ratio
+  },
+});

@@ -13,17 +13,22 @@ export default function RidesSummary({ route }: { route: { params: { rider: any;
   const navigation = useNavigation<RideSummaryNavigationProp>()
   const { rider, amount } = route.params
 
+  console.log("The data being received", rider, amount);
+
   const [isDeliverySummaryExpanded, setIsDeliverySummaryExpanded] = useState(true)
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false)
 
   const handleProceed = () => {
-    setShowConfirmationModal(true)
-  }
+    console.log("It clicked");
+    navigation.navigate("Add", {
+      screen: "RideDetailsMap",
+      params: {
+        rider,
+        amount,
+      },
+    });
+  };
 
-  const handleTrackRider = () => {
-    setShowConfirmationModal(false)
-    navigation.navigate("RideHistory")
-  }
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -37,11 +42,13 @@ export default function RidesSummary({ route }: { route: { params: { rider: any;
 
       <ScrollView style={styles.content}>
         <View style={styles.totalSection}>
-          <Text style={styles.totalLabel}>Total</Text>
-          <Text style={styles.totalAmount}>₦{amount}</Text>
+          <View style={styles.totalRow}>
+            <Text style={styles.totalLabel}>Total</Text>
+            <Text style={styles.totalAmount}>₦{amount}</Text>
+          </View>
           <View style={styles.deliveryFeeNote}>
-            <View style={styles.greenDot} />
-            <Text style={styles.deliveryFeeText}>Delivery fee paid via wallet</Text>
+            <View style={styles.redDot} />
+            <Text style={styles.deliveryFeeText}>Delivery fee to be paid by receiver</Text>
           </View>
         </View>
 
@@ -80,53 +87,53 @@ export default function RidesSummary({ route }: { route: { params: { rider: any;
             <View style={styles.detailsSection}>
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Sender Name</Text>
-                <Text style={styles.detailValue}>Qamardeen Malik</Text>
+                <Text style={styles.detailValue}>{rider.senderName}</Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Sender Phone</Text>
-                <Text style={styles.detailValue}>07030123456</Text>
+                <Text style={styles.detailValue}>{rider.senderPhone}</Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Receiver Name</Text>
-                <Text style={styles.detailValue}>Adebisi Lateefat</Text>
+                <Text style={styles.detailValue}>{rider.receiverName}</Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Receiver Phone</Text>
-                <Text style={styles.detailValue}>07031234567</Text>
+                <Text style={styles.detailValue}>{rider.receiverPhone}</Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Parcel Name</Text>
-                <Text style={styles.detailValue}>Samsung Phone</Text>
+                <Text style={styles.detailValue}>{rider.parcelName}</Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Parcel Category</Text>
-                <Text style={styles.detailValue}>Electronics</Text>
+                <Text style={styles.detailValue}>{rider.parcelCategory}</Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Parcel Value</Text>
-                <Text style={styles.detailValue}>100,000 - 200,000</Text>
+                <Text style={styles.detailValue}>{rider.parcelValue}</Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Description</Text>
-                <Text style={styles.detailValue}>Nil</Text>
+                <Text style={styles.detailValue}>{rider.description}</Text>
               </View>
               <View style={styles.detailDivider} />
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Payer</Text>
-                <Text style={styles.detailValue}>Sender - Qamardeen Malik</Text>
+                <Text style={styles.detailValue}>{rider.payer}</Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Payment method</Text>
-                <Text style={styles.detailValue}>Wallet</Text>
+                <Text style={styles.detailValue}>{rider.paymentMethod}</Text>
               </View>
               <View style={styles.detailDivider} />
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Pay on delivery</Text>
-                <Text style={styles.detailValue}>No</Text>
+                <Text style={styles.detailValue}>{rider.payOnDelivery}</Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Pay on delivery amount</Text>
-                <Text style={styles.detailValue}>NA</Text>
+                <Text style={styles.detailValue}>{rider.payOnDeliveryAmount}</Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Delivery fee for rider</Text>
@@ -136,41 +143,7 @@ export default function RidesSummary({ route }: { route: { params: { rider: any;
           </View>
         )}
 
-        <View style={styles.riderCard}>
-          <View style={styles.riderInfo}>
-            <Image
-              source={{ uri: rider.image }}
-              style={styles.riderImage}
-              defaultSource={{ uri: "/placeholder.svg?height=60&width=60" }}
-            />
-            <View style={styles.riderDetails}>
-              <Text style={styles.riderName}>{rider.name}</Text>
-              <View style={styles.ratingContainer}>
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Icon key={star} name="star" size={16} color={star <= rider.rating ? "#FFD700" : "#CCCCCC"} />
-                ))}
-              </View>
-            </View>
-            <View style={styles.priceTag}>
-              <Text style={styles.priceText}>₦ {rider.price}</Text>
-            </View>
-          </View>
 
-          <View style={styles.riderVehicleInfo}>
-            <View style={styles.vehicleDetail}>
-              <Icon name="bicycle" size={20} color="#000000" />
-              <Text style={styles.vehicleDetailText}>{rider.vehicleType}</Text>
-            </View>
-            <View style={styles.vehicleDetail}>
-              <Icon name="color-palette" size={20} color="#000000" />
-              <Text style={styles.vehicleDetailText}>{rider.vehicleColor}</Text>
-            </View>
-            <View style={styles.vehicleDetail}>
-              <Icon name="time" size={20} color="#000000" />
-              <Text style={styles.vehicleDetailText}>{rider.distance}</Text>
-            </View>
-          </View>
-        </View>
       </ScrollView>
 
       <View style={styles.footer}>
@@ -179,27 +152,6 @@ export default function RidesSummary({ route }: { route: { params: { rider: any;
         </TouchableOpacity>
       </View>
 
-      {/* Ride Confirmation Modal */}
-      <Modal visible={showConfirmationModal} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
-          <View style={styles.confirmationModal}>
-            <View style={styles.successIconContainer}>
-              <View style={styles.successIconOuter}>
-                <View style={styles.successIconInner}>
-                  <Icon name="checkmark" size={40} color="white" />
-                </View>
-              </View>
-            </View>
-            <Text style={styles.confirmationTitle}>Ride Confirmation</Text>
-            <Text style={styles.confirmationText}>
-              Your ride request has been sent successfully, your rider will arrive in approximately 20 mins
-            </Text>
-            <TouchableOpacity style={styles.trackRiderButton} onPress={handleTrackRider}>
-              <Text style={styles.trackRiderButtonText}>Track Rider</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
     </SafeAreaView>
   )
 }
@@ -244,32 +196,37 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 8,
   },
+  totalRow: {
+    flexDirection: "row",
+    justifyContent: "space-between", // Align Total & Amount on opposite ends
+    alignItems: "center",
+    marginBottom: 4,
+  },
   totalLabel: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: "400", // Lighter weight to match the image
     color: "#000000",
-    marginBottom: 4,
   },
   totalAmount: {
     fontSize: 24,
     fontWeight: "700",
-    color: "#800080",
-    marginBottom: 8,
+    color: "#800080", // Purple color
   },
   deliveryFeeNote: {
     flexDirection: "row",
     alignItems: "center",
+    marginTop: 4,
   },
-  greenDot: {
+  redDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: "#00A651",
-    marginRight: 8,
+    backgroundColor: "#FF0000", // Red color for dot
+    marginRight: 6,
   },
   deliveryFeeText: {
     fontSize: 14,
-    color: "#00A651",
+    color: "#FF0000", // Red text
   },
   summarySection: {
     flexDirection: "row",
@@ -419,7 +376,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingTop: 440
-  
+
   },
   confirmationModal: {
     width: "100%",

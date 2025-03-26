@@ -1,5 +1,3 @@
-
-
 "use client"
 
 import React from "react"
@@ -44,7 +42,7 @@ import RidesSummary from "../screens/SendParcel/RideSummary"
 import RideHistory from "../screens/SendParcel/RideHistory"
 import SearchRider from "../screens/SendParcel/SearchRider"
 import BankTransfer from "../screens/SendParcel/BT/BankDetails"
-
+import BankTransferPayment from '../screens/SendParcel/BT/Transfer'
 // Track Parcel and Delivered
 
 import DeliveredSummary from "../screens/SendParcel/DeliveredSummary"
@@ -76,6 +74,7 @@ function SendParcelNavigator() {
       <SendParcelStack.Screen name="SearchRiders" component={SearchRidersScreen} />
       <SendParcelStack.Screen name="SearchRider" component={SearchRider} />
       <SendParcelStack.Screen name="BankTransfer" component={BankTransfer} />
+      <SendParcelStack.Screen name="BankTransferPayment" component={BankTransferPayment}/>
       <SendParcelStack.Screen name="RideConfirmation" component={RideConfirmationScreen} />
       <SendParcelStack.Screen name="RiderBid" component={RiderBids} />
       <SendParcelStack.Screen name="RidesSummary" component={RidesSummary} />
@@ -83,6 +82,12 @@ function SendParcelNavigator() {
       <SendParcelStack.Screen name="RidesDetails" component={RidesDetails} />
       <SendParcelStack.Screen name="DeliveryDetails" component={DeliveryDetails} />
       <SendParcelStack.Screen name="DeliveredSummary" component={DeliveredSummary} />
+      <SendParcelStack.Screen name="Chat" component={ChatScreen} />
+      <Stack.Screen name="RideSummary" component={RideSummary} />
+
+      <Stack.Screen name="RideDetailsMap" component={RideDetailsMap} />
+
+
     </SendParcelStack.Navigator>
   )
 }
@@ -95,7 +100,6 @@ function HomeStack() {
       <Stack.Screen name="ActiveDeliveries" component={ActiveDeliveries} />
       <Stack.Screen name="RideSummary" component={RideSummary} />
       <Stack.Screen name="DeliveryDetails" component={DeliveryDetails} />
-      <Stack.Screen name="RideDetailsMap" component={RideDetailsMap} />
     </Stack.Navigator>
   )
 }
@@ -165,7 +169,7 @@ function AuthStack() {
 }
 
 export function Navigation() {
-  const [isAuthenticated] = React.useState(false) // Replace with actual auth state
+  const [isAuthenticated] = React.useState(true) // Replace with actual auth state
 
   return (
     <NavigationContainer>
@@ -188,4 +192,3 @@ const styles = StyleSheet.create({
     right: 0,
   },
 })
-
