@@ -6,6 +6,8 @@ import { useNavigation } from "@react-navigation/native"
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import Icon from "react-native-vector-icons/Ionicons"
 import type { RootStackParamList } from "../../types/navigation"
+import { colors } from "../../constants/colors"
+import { Ionicons } from '@expo/vector-icons';
 
 type FAQsScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "FAQs">
 
@@ -19,7 +21,7 @@ export default function FAQsScreen() {
   const navigation = useNavigation<FAQsScreenNavigationProp>()
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedFAQ, setSelectedFAQ] = useState<FAQ | null>(null)
-  
+
   const faqs: FAQ[] = [
     {
       id: "1",
@@ -37,22 +39,22 @@ export default function FAQsScreen() {
       answer: "You can book rides by selecting your pickup and drop-off locations, choosing a delivery type, and confirming your booking."
     }
   ]
-  
-  const filteredFAQs = searchQuery.trim() === "" 
-    ? faqs 
-    : faqs.filter(faq => 
-        faq.question.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-  
+
+  const filteredFAQs = searchQuery.trim() === ""
+    ? faqs
+    : faqs.filter(faq =>
+      faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+
   const handleFAQPress = (faq: FAQ) => {
     setSelectedFAQ(faq)
   }
-  
+
   const closeModal = () => {
     setSelectedFAQ(null)
   }
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -62,7 +64,7 @@ export default function FAQsScreen() {
         <Text style={styles.headerTitle}>FAQs</Text>
         <View style={styles.headerRight} />
       </View>
-      
+
       <View style={styles.searchContainer}>
         <Icon name="search" size={20} color="#FFFFFF" style={styles.searchIcon} />
         <TextInput
@@ -73,11 +75,20 @@ export default function FAQsScreen() {
           onChangeText={setSearchQuery}
         />
       </View>
-      
+      {/* Video Placeholder */}
+      <View style={styles.videoCard}>
+        <Image
+          source={{ uri: 'https://m.atcdn.co.uk/vms/media/w980/363c3efd17d34f60a7a9dfde34f80ddc.jpg' }}
+          style={styles.videoThumbnail}
+        />
+        <View style={styles.playIcon}>
+          <Ionicons name="play-circle" size={50} color="#fff" />
+        </View>
+      </View>
       <ScrollView style={styles.faqList}>
         {filteredFAQs.map((faq) => (
-          <TouchableOpacity 
-            key={faq.id} 
+          <TouchableOpacity
+            key={faq.id}
             style={styles.faqItem}
             onPress={() => handleFAQPress(faq)}
           >
@@ -86,9 +97,9 @@ export default function FAQsScreen() {
           </TouchableOpacity>
         ))}
       </ScrollView>
-      
+
       {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
+      {/* <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.navItem}>
           <Icon name="home-outline" size={24} color="#000000" />
           <Text style={styles.navText}>Home</Text>
@@ -108,8 +119,8 @@ export default function FAQsScreen() {
           <Icon name="settings-outline" size={24} color="#800080" />
           <Text style={[styles.navText, styles.activeNavText]}>Settings</Text>
         </TouchableOpacity>
-      </View>
-      
+      </View> */}
+
       {/* FAQ Detail Modal */}
       <Modal
         visible={selectedFAQ !== null}
@@ -125,7 +136,7 @@ export default function FAQsScreen() {
                 <Icon name="close" size={20} color="#000000" />
               </TouchableOpacity>
             </View>
-            
+
             <Text style={styles.modalAnswer}>{selectedFAQ?.answer}</Text>
           </View>
         </View>
@@ -165,9 +176,9 @@ const styles = StyleSheet.create({
     width: 40,
   },
   searchContainer: {
+    marginTop: 10,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
     marginHorizontal: 16,
     marginBottom: 16,
     borderRadius: 8,
@@ -273,5 +284,27 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333333",
     lineHeight: 24,
+  },
+  videoCard: {
+    position: 'relative',
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 10,
+    marginHorizontal:19,
+  },
+  videoThumbnail: {
+    width: '100%',
+    height: 180,
+    borderRadius: 12,
+  },
+  playIcon: {
+    position: 'absolute',
+    top: '40%',
+    left: '42%',
+  },
+  videoCaption: {
+    fontSize: 14,
+    marginBottom: 24,
+    color: colors.text.secondary,
   },
 })

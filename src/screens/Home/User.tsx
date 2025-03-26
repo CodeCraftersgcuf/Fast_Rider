@@ -49,19 +49,24 @@ export default function User() {
   ];
 
   const handleActionPress = (action: string) => {
+
     if (action === "Send Parcel") {
-      navigation.navigate("Add" as never);
+      navigation.navigate("Add", { screen: 'ParcelPaymentProcess' });
     } else {
-      console.log(`${action} pressed`);
+      navigation.navigate("Add", { screen: 'SupportScreen' });
     }
   };
 
   const handleParcelPress = (action: string) => {
     if (action === "Schedule") {
-      navigation.navigate("Add", { screen: "ScheduleParcel" })
+      navigation.navigate("Add", { screen: "WalletScreen" })
     } else {
       console.log(`${action} pressed`)
     }
+  }
+  const handleSupport = () => {
+    navigation.navigate("Add", { screen: 'SupportScreen' })
+
   }
 
   const handleLocationPress = (type: string) => {
@@ -141,7 +146,7 @@ export default function User() {
             <View style={styles.actionButtons}>
               <ActionButton
                 icon="bicycle"
-                label="Send Parcel"
+                label="Deliveries"
 
                 onPress={() => handleActionPress("Send Parcel")}
               />
@@ -149,7 +154,7 @@ export default function User() {
                 icon="support-agent"
                 label="Support"
                 image="support"
-                onPress={() => handleActionPress("Track Parcel")}
+                onPress={() => handleSupport()}
               />
               <ActionButton
                 icon="time"

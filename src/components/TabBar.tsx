@@ -6,49 +6,53 @@ import { colors } from "../constants/colors"
 import { theme } from "../constants/theme"
 import { useNavigation } from "@react-navigation/native"
 
-interface TabBarProps {
-  activeTab: string
-  onTabPress: (tabName: string) => void
-}
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs"
+import { TabNavigatorParamList } from "../types"
+
+type TabBarProps = {
+  activeTab: string;
+  onTabPress: (tabName: string) => void;
+};
 
 export const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabPress }) => {
-  const navigation = useNavigation()
+  const navigation = useNavigation();
 
   const tabs = [
     { name: "Home", icon: "home" },
     { name: "Deliveries", icon: "bicycle" },
     { name: "Chat", icon: "chatbubble" },
     { name: "Settings", icon: "settings" },
-  ]
+  ];
 
-  const handlePress = (tabName) => {
-    onTabPress(tabName)
-    navigation.navigate(tabName)
-  }
+  const handlePress = (tabName: string) => {
+    onTabPress(tabName);
+
+    navigation.navigate("MainApp" as never, {
+      screen: tabName as never,
+    } as never);
+  };
 
   return (
     <View style={styles.container}>
       {tabs.map((tab) => (
         <TouchableOpacity
           key={tab.name}
-          style={[styles.tab, activeTab === tab.name && styles.activeTab, tab.isMain && styles.mainTab]}
+          style={[styles.tab, activeTab === tab.name && styles.activeTab]}
           onPress={() => handlePress(tab.name)}
         >
-          {tab.isMain ? (
-            <View style={styles.mainTabButton}>
-              <Icon name={tab.icon} size={30} color={colors.white} />
-            </View>
-          ) : (
-            <>
-              <Icon name={tab.icon} size={28} color={activeTab === tab.name ? colors.primary : colors.text.secondary} />
-              <Text style={[styles.tabLabel, activeTab === tab.name && styles.activeTabLabel]}>{tab.name}</Text>
-            </>
-          )}
+          <Icon
+            name={tab.icon}
+            size={28}
+            color={activeTab === tab.name ? colors.primary : colors.text.secondary}
+          />
+          <Text style={[styles.tabLabel, activeTab === tab.name && styles.activeTabLabel]}>
+            {tab.name}
+          </Text>
         </TouchableOpacity>
       ))}
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

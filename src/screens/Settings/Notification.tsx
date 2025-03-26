@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native"
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import Icon from "react-native-vector-icons/Ionicons"
 import type { RootStackParamList } from "../../types/navigation"
+import images from "../../constants/images"
 
 type NotificationsScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Notifications">
 
@@ -21,7 +22,7 @@ interface Notification {
 
 export default function NotificationsScreen() {
   const navigation = useNavigation<NotificationsScreenNavigationProp>()
-  
+
   const notifications: Notification[] = [
     {
       id: "1",
@@ -38,7 +39,7 @@ export default function NotificationsScreen() {
       message: "Ge the best discount on your rides when you use the promo code",
       timestamp: "23/02/25 - 02:22 AM",
       isRead: false,
-      image: require("../../assets/promo-image.png")
+      image: images.notification_image
     },
     {
       id: "3",
@@ -81,7 +82,7 @@ export default function NotificationsScreen() {
       isRead: false
     }
   ]
-  
+
   const handleNotificationPress = (notification: Notification) => {
     // Handle notification press based on type
     if (notification.type === "message") {
@@ -91,9 +92,9 @@ export default function NotificationsScreen() {
       // Handle system notification
     }
   }
-  
+
   const renderNotificationItem = (notification: Notification) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       key={notification.id}
       style={styles.notificationItem}
       onPress={() => handleNotificationPress(notification)}
@@ -101,13 +102,13 @@ export default function NotificationsScreen() {
       {!notification.isRead && (
         <View style={styles.unreadIndicator} />
       )}
-      
+
       <View style={styles.notificationContent}>
         <View style={styles.notificationHeader}>
           <Text style={styles.notificationTitle}>{notification.title}</Text>
           <Text style={styles.notificationTimestamp}>{notification.timestamp}</Text>
         </View>
-        
+
         <View style={styles.notificationBody}>
           <Text style={styles.notificationMessage}>{notification.message}</Text>
           {notification.image && (
@@ -117,23 +118,23 @@ export default function NotificationsScreen() {
       </View>
     </TouchableOpacity>
   )
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => navigation.navigate("Add", { screen: 'Settings' })} style={styles.backButton}>
           <Icon name="chevron-back" size={24} color="#000000" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Notifications</Text>
         <View style={styles.headerRight} />
       </View>
-      
+
       <ScrollView style={styles.notificationsList}>
         {notifications.map(renderNotificationItem)}
       </ScrollView>
-      
+
       {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
+      {/* <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.navItem}>
           <Icon name="home-outline" size={24} color="#000000" />
           <Text style={styles.navText}>Home</Text>
@@ -153,7 +154,7 @@ export default function NotificationsScreen() {
           <Icon name="settings-outline" size={24} color="#800080" />
           <Text style={[styles.navText, styles.activeNavText]}>Settings</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </SafeAreaView>
   )
 }

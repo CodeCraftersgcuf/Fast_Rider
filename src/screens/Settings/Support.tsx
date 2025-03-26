@@ -7,6 +7,7 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import Icon from "react-native-vector-icons/Ionicons"
 import type { RootStackParamList } from "../../types/navigation"
 
+import images from "../../constants/images"
 type SupportScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Support">
 
 type MessageType = "agent" | "user" | "options" | "form" | "formSubmission" | "typing"
@@ -27,7 +28,7 @@ interface Message {
 export default function SupportScreen() {
   const navigation = useNavigation<SupportScreenNavigationProp>()
   const scrollViewRef = useRef<ScrollView>(null)
-  
+
   const [messages, setMessages] = useState<Message[]>([])
   const [inputText, setInputText] = useState("")
   const [selectedIssue, setSelectedIssue] = useState<string | null>(null)
@@ -38,7 +39,7 @@ export default function SupportScreen() {
     email: ""
   })
   const [isTyping, setIsTyping] = useState(false)
-  
+
   // Initialize chat
   useEffect(() => {
     const initialMessages: Message[] = [
@@ -62,42 +63,42 @@ export default function SupportScreen() {
         ]
       }
     ]
-    
+
     setMessages(initialMessages)
   }, [])
-  
+
   const handleSendMessage = () => {
     if (inputText.trim() === "") return
-    
+
     const newMessage: Message = {
       id: Date.now().toString(),
       type: "user",
       content: inputText,
       timestamp: new Date()
     }
-    
+
     setMessages(prev => [...prev, newMessage])
     setInputText("")
-    
+
     // Simulate agent typing
     simulateAgentTyping()
   }
-  
+
   const handleSelectOption = (option: string) => {
     setSelectedIssue(option)
-    
+
     const newMessage: Message = {
       id: Date.now().toString(),
       type: "user",
       content: option,
       timestamp: new Date()
     }
-    
+
     setMessages(prev => [...prev, newMessage])
-    
+
     // Simulate agent typing
     simulateAgentTyping()
-    
+
     // After a delay, show the form request
     setTimeout(() => {
       const formRequestMessage: Message = {
@@ -106,15 +107,15 @@ export default function SupportScreen() {
         content: "Drop the following details",
         timestamp: new Date()
       }
-      
+
       setMessages(prev => [...prev, formRequestMessage])
       setShowForm(true)
     }, 1500)
   }
-  
+
   const handleSubmitForm = () => {
     if (!formData.fullName || !formData.phoneNumber || !formData.email) return
-    
+
     const formSubmissionMessage: Message = {
       id: Date.now().toString(),
       type: "formSubmission",
@@ -126,13 +127,13 @@ export default function SupportScreen() {
         email: formData.email
       }
     }
-    
+
     setMessages(prev => [...prev, formSubmissionMessage])
     setShowForm(false)
-    
+
     // Simulate agent typing
     simulateAgentTyping()
-    
+
     // After a delay, show the final message
     setTimeout(() => {
       const finalMessage: Message = {
@@ -141,34 +142,34 @@ export default function SupportScreen() {
         content: "An agent will be with you shortly",
         timestamp: new Date()
       }
-      
+
       setMessages(prev => [...prev, finalMessage])
     }, 1500)
   }
-  
+
   const simulateAgentTyping = () => {
     setIsTyping(true)
-    
+
     setTimeout(() => {
       setIsTyping(false)
     }, 1500)
   }
-  
+
   // Auto scroll to bottom when messages change
   useEffect(() => {
     setTimeout(() => {
       scrollViewRef.current?.scrollToEnd({ animated: true })
     }, 100)
   }, [messages, isTyping, showForm])
-  
+
   const renderMessage = (message: Message) => {
     switch (message.type) {
       case "agent":
         return (
           <View style={styles.agentMessageContainer}>
-            <Image 
-              source={require("../../assets/support-agent.png")} 
-              style={styles.agentAvatar} 
+            <Image
+              source={images.agent}
+              style={styles.agentAvatar}
             />
             <View style={styles.agentMessage}>
               <Text style={styles.messageText}>{message.content}</Text>
@@ -176,7 +177,7 @@ export default function SupportScreen() {
             </View>
           </View>
         )
-        
+
       case "user":
         return (
           <View style={styles.userMessageContainer}>
@@ -186,27 +187,27 @@ export default function SupportScreen() {
                 {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </Text>
             </View>
-            <Image 
-              source={require("../../assets/support-agent.png")} 
-              style={styles.userAvatar} 
+            <Image
+              source={images.agent}
+              style={styles.userAvatar}
             />
           </View>
         )
-        
+
       case "options":
         return (
           <View style={styles.optionsContainer}>
             <Text style={styles.optionsTitle}>{message.content}</Text>
             {message.options?.map((option, index) => (
-              <TouchableOpacity 
-                key={index} 
+              <TouchableOpacity
+                key={index}
                 style={[
                   styles.optionButton,
                   option === "Issues with payment" && styles.activeOptionButton
                 ]}
                 onPress={() => handleSelectOption(option)}
               >
-                <Text 
+                <Text
                   style={[
                     styles.optionText,
                     option === "Issues with payment" && styles.activeOptionText
@@ -218,44 +219,44 @@ export default function SupportScreen() {
             ))}
           </View>
         )
-        
+
       case "formSubmission":
         return (
           <View style={styles.userMessageContainer}>
             <View style={styles.formSubmissionMessage}>
               <Text style={styles.formSubmissionTitle}>{message.content}</Text>
-              
+
               <View style={styles.formSubmissionDetail}>
                 <Text style={styles.formSubmissionLabel}>Name</Text>
                 <Text style={styles.formSubmissionValue}>{message.formData?.fullName}</Text>
               </View>
-              
+
               <View style={styles.formSubmissionDetail}>
                 <Text style={styles.formSubmissionLabel}>Phone Number</Text>
                 <Text style={styles.formSubmissionValue}>{message.formData?.phoneNumber}</Text>
               </View>
-              
+
               <View style={styles.formSubmissionDetail}>
                 <Text style={styles.formSubmissionLabel}>Email</Text>
                 <Text style={styles.formSubmissionValue}>{message.formData?.email}</Text>
               </View>
-              
+
               <Text style={styles.formSubmissionTimestamp}>
                 {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </Text>
             </View>
-            <Image 
-              source={require("../../assets/support-agent.png")} 
-              style={styles.userAvatar} 
+            <Image
+              source={images.agent}
+              style={styles.userAvatar}
             />
           </View>
         )
-        
+
       default:
         return null
     }
   }
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -268,8 +269,8 @@ export default function SupportScreen() {
         </View>
         <View style={styles.headerRight} />
       </View>
-      
-      <KeyboardAvoidingView 
+
+      <KeyboardAvoidingView
         style={styles.chatContainer}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
@@ -277,8 +278,8 @@ export default function SupportScreen() {
         <View style={styles.conversationHeader}>
           <Text style={styles.conversationHeaderText}>This is the beginning of your conversation</Text>
         </View>
-        
-        <ScrollView 
+
+        <ScrollView
           ref={scrollViewRef}
           style={styles.messagesContainer}
           contentContainerStyle={styles.messagesContent}
@@ -288,7 +289,7 @@ export default function SupportScreen() {
               {renderMessage(message)}
             </View>
           ))}
-          
+
           {isTyping && (
             <View style={styles.typingContainer}>
               <View style={styles.typingIndicator}>
@@ -298,7 +299,7 @@ export default function SupportScreen() {
               </View>
             </View>
           )}
-          
+
           {showForm && (
             <View style={styles.formContainer}>
               <Text style={styles.formLabel}>Full Name</Text>
@@ -308,7 +309,7 @@ export default function SupportScreen() {
                 value={formData.fullName}
                 onChangeText={(text) => setFormData(prev => ({ ...prev, fullName: text }))}
               />
-              
+
               <Text style={styles.formLabel}>Phone Number</Text>
               <TextInput
                 style={styles.formInput}
@@ -317,7 +318,7 @@ export default function SupportScreen() {
                 value={formData.phoneNumber}
                 onChangeText={(text) => setFormData(prev => ({ ...prev, phoneNumber: text }))}
               />
-              
+
               <Text style={styles.formLabel}>Email</Text>
               <TextInput
                 style={styles.formInput}
@@ -326,8 +327,8 @@ export default function SupportScreen() {
                 value={formData.email}
                 onChangeText={(text) => setFormData(prev => ({ ...prev, email: text }))}
               />
-              
-              <TouchableOpacity 
+
+              <TouchableOpacity
                 style={styles.submitButton}
                 onPress={handleSubmitForm}
               >
@@ -336,7 +337,7 @@ export default function SupportScreen() {
             </View>
           )}
         </ScrollView>
-        
+
         <View style={styles.inputContainer}>
           <TextInput
             style={styles.input}
@@ -344,7 +345,7 @@ export default function SupportScreen() {
             value={inputText}
             onChangeText={setInputText}
           />
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.sendButton}
             onPress={handleSendMessage}
           >

@@ -3,12 +3,12 @@
 "use client"
 
 import { useState } from "react"
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, Modal, ScrollView } from "react-native"
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, Modal, ScrollView, } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import Icon from "react-native-vector-icons/Ionicons"
 import type { RootStackParamList } from "../../types/navigation"
-
+import images from "../../constants/images"
 type SettingsScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Settings">
 
 interface SettingOptionProps {
@@ -47,7 +47,7 @@ export default function SettingsScreen() {
   }
 
   const handleEditProfile = () => {
-    navigation.navigate("EditProfile")
+    navigation.navigate("Add", { screen: "EditProfileScreen" })
   }
 
   const handleLogout = () => {
@@ -64,6 +64,10 @@ export default function SettingsScreen() {
     setShowLogoutModal(false)
   }
 
+  const handleSupport = () => {
+    console.log("clicked support");
+    navigation.navigate("Add", { screen: 'SupportScreen' })
+  }
   return (
     <SafeAreaView style={styles.container}>
       {/* Profile Header */}
@@ -102,7 +106,7 @@ export default function SettingsScreen() {
             <View style={styles.settingIconContainer}>
               <Icon name="wallet-outline" size={24} color="#800080" />
             </View>
-            <TouchableOpacity style={styles.settingButton}>
+            <TouchableOpacity style={styles.settingButton} onPress={() => { navigation.navigate("Add", { screen: "WalletScreen" }) }}>
               <Text style={styles.settingButtonText}>Wallet</Text>
             </TouchableOpacity>
           </View>
@@ -111,17 +115,17 @@ export default function SettingsScreen() {
             <View style={styles.settingIconContainer}>
               <Icon name="headset-outline" size={24} color="#800080" />
             </View>
-            <TouchableOpacity style={styles.settingButton}>
+            <TouchableOpacity style={styles.settingButton} onPress={handleSupport}>
               <Text style={styles.settingButtonText}>Support</Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.settingCard}>
             <View style={styles.settingIconContainer}>
-              <Icon name="location-outline" size={24} color="#800080" />
+            <Image source={images.tier}/>
             </View>
             <TouchableOpacity style={styles.settingButton}>
-              <Text style={styles.settingButtonText}>Address</Text>
+              <Text style={styles.settingButtonText}>Tier(3)</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -129,8 +133,10 @@ export default function SettingsScreen() {
         {/* Other Settings */}
         <Text style={styles.sectionTitle}>Other Settings</Text>
         <View style={styles.otherSettingsContainer}>
-          <SettingOption icon="document-text-outline" title="FAQs" onPress={() => {}} />
-          <SettingOption icon="notifications-outline" title="Notifications" onPress={() => {}} />
+          <SettingOption icon="notifications-outline" title="Verification" onPress={() => { console.log("it is clicked"); }} />
+          <SettingOption icon="document-text-outline" title="FAQs" onPress={() => { navigation.navigate("Add", { screen: 'FAQsScreen' }) }} />
+          <SettingOption icon="notifications-outline" title="Notifications" onPress={() => { navigation.navigate("Add", { screen: "NotificationsScreen" }); console.log("it is clicked"); }} />
+
         </View>
 
         {/* Logout and Delete Account */}

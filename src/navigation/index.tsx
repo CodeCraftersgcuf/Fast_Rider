@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react"
+import React, { useContext } from "react"
 import { View, StyleSheet } from "react-native"
 import { NavigationContainer } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
@@ -24,6 +24,9 @@ import RideSummary from "../screens/SendParcel/RideDetails/RiderSummary"
 import DeliveryDetails from "../screens/SendParcel/RideDetails/DeliveryDetails"
 import RideDetailsMap from "../screens/SendParcel/RideDetails/RideDetailsMap"
 import RidesDetails from "../screens/SendParcel/RideDetails/RidesDetails"
+
+//Delvieries Activity;
+import ParcelPaymentProcess from '../screens/Deliveries/Scheduled'
 
 // Send Parcel Screens
 import LocationSelect from "../screens/SendParcel/LocationSelect"
@@ -51,15 +54,23 @@ import DeliveredSummary from "../screens/SendParcel/DeliveredSummary"
 import DeliveriesScreen from "../screens/Deliveries"
 import ChatScreen from "../screens/Chat"
 import SettingsScreen from "../screens/Settings"
+import SupportScreen from "../screens/Settings/Support"
+import NotificationsScreen from "../screens/Settings/Notification"
+import EditProfileScreen from "../screens/Settings/EditProfile"
+import FAQsScreen from "../screens/Settings/FAQs"
+import WalletScreen from "../screens/Settings/Wallet"
 
 import { TabBar } from "../components/TabBar"
 import type { RootStackParamList, TabNavigatorParamList, SendParcelStackParamList } from "../types"
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { useNavigation } from "@react-navigation/native";
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 const Tab = createBottomTabNavigator<TabNavigatorParamList>()
 const SendParcelStack = createNativeStackNavigator<SendParcelStackParamList>()
 
 function SendParcelNavigator() {
+
   return (
     <SendParcelStack.Navigator screenOptions={{ headerShown: false }}>
       <SendParcelStack.Screen name="SendParcel" component={SendParcel} />
@@ -74,7 +85,7 @@ function SendParcelNavigator() {
       <SendParcelStack.Screen name="SearchRiders" component={SearchRidersScreen} />
       <SendParcelStack.Screen name="SearchRider" component={SearchRider} />
       <SendParcelStack.Screen name="BankTransfer" component={BankTransfer} />
-      <SendParcelStack.Screen name="BankTransferPayment" component={BankTransferPayment}/>
+      <SendParcelStack.Screen name="BankTransferPayment" component={BankTransferPayment} />
       <SendParcelStack.Screen name="RideConfirmation" component={RideConfirmationScreen} />
       <SendParcelStack.Screen name="RiderBid" component={RiderBids} />
       <SendParcelStack.Screen name="RidesSummary" component={RidesSummary} />
@@ -84,10 +95,16 @@ function SendParcelNavigator() {
       <SendParcelStack.Screen name="DeliveredSummary" component={DeliveredSummary} />
       <SendParcelStack.Screen name="Chat" component={ChatScreen} />
       <Stack.Screen name="RideSummary" component={RideSummary} />
-
+      <Stack.Screen name="ParcelPaymentProcess" component={ParcelPaymentProcess} />
       <Stack.Screen name="RideDetailsMap" component={RideDetailsMap} />
 
 
+
+      <Stack.Screen name="SupportScreen" component={SupportScreen} />
+      <Stack.Screen name="NotificationsScreen" component={NotificationsScreen} />
+      <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
+      <Stack.Screen name="FAQsScreen" component={FAQsScreen} />
+      <Stack.Screen name="WalletScreen" component={WalletScreen} />
     </SendParcelStack.Navigator>
   )
 }
@@ -107,6 +124,7 @@ function HomeStack() {
 function TabNavigator() {
   const [activeTab, setActiveTab] = React.useState("Home")
   const [isSendParcelVisible, setIsSendParcelVisible] = React.useState(false)
+  const tabNavigation = useNavigation<BottomTabNavigationProp<TabNavigatorParamList>>();
 
   const handleTabPress = (tabName: string) => {
     setActiveTab(tabName)
@@ -145,7 +163,11 @@ function TabNavigator() {
 
       {!isSendParcelVisible && (
         <View style={styles.tabBarContainer}>
-          <TabBar activeTab={activeTab} onTabPress={handleTabPress} />
+          <TabBar
+            activeTab={activeTab}
+            onTabPress={handleTabPress}
+            navigation={tabNavigation}
+          />
         </View>
       )}
     </>

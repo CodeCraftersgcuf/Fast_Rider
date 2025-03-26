@@ -11,6 +11,10 @@ const battery = require("../assets/images/battery.png");
 const send_bid = require("../assets/images/send_bid.png");
 const receive_bid = require("../assets/images/receive_bid.png");
 const warning= require("../assets/images/warning.png");
+const agent = require("../assets/images/agent.png");
+const notification_image = require("../assets/images/notification_image.png");
+const down_arrow = require("../assets/images/down_arrow.png");
+const tier =  require("../assets/images/tier.png");
 
 const images = {
   rider_onboarding,
@@ -26,6 +30,10 @@ const images = {
   send_bid,
   receive_bid,
   warning,
+  agent,
+  notification_image,
+  down_arrow,
+  tier
 };
 
 export default images;

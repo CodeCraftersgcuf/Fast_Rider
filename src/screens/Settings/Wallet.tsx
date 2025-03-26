@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native"
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import Icon from "react-native-vector-icons/Ionicons"
 import type { RootStackParamList } from "../../types/navigation"
+import images from "../../constants/images"
 
 type WalletScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Wallet">
 
@@ -28,7 +29,7 @@ export default function WalletScreen() {
   const [activeModal, setActiveModal] = useState<ModalType>("none")
   const [confirmationStatus, setConfirmationStatus] = useState<ConfirmationStatus>("none")
   const [isLoading, setIsLoading] = useState(false)
-  
+
   // Form states
   const [withdrawAmount, setWithdrawAmount] = useState("")
   const [bankName, setBankName] = useState("")
@@ -95,7 +96,7 @@ export default function WalletScreen() {
 
   const handlePlaceWithdrawal = () => {
     if (!withdrawAmount || !bankName || !accountName || !accountNumber) return
-    
+
     setIsLoading(true)
     // Simulate API call
     setTimeout(() => {
@@ -141,10 +142,10 @@ export default function WalletScreen() {
   const renderTransactionItem = ({ item }: { item: Transaction }) => (
     <View style={styles.transactionItem}>
       <View style={styles.transactionIconContainer}>
-        <Icon 
-          name={item.type === "topup" ? "arrow-down" : "arrow-up"} 
-          size={24} 
-          color="#800080" 
+        <Icon
+          name={item.type === "topup" ? "arrow-down" : "arrow-up"}
+          size={24}
+          color="#800080"
         />
       </View>
       <View style={styles.transactionInfo}>
@@ -153,9 +154,9 @@ export default function WalletScreen() {
         </Text>
         <Text style={styles.transactionDate}>{item.date}</Text>
       </View>
-      <Text 
+      <Text
         style={[
-          styles.transactionAmount, 
+          styles.transactionAmount,
           item.type === "topup" ? styles.amountPositive : styles.amountNegative
         ]}
       >
@@ -183,40 +184,32 @@ export default function WalletScreen() {
       </View>
 
       <View style={styles.actionsContainer}>
-        <TouchableOpacity style={styles.actionButton} onPress={handleTopup}>
-          <Icon name="paper-plane" size={20} color="#800080" />
-          <Text style={styles.actionText}>Topup</Text>
-        </TouchableOpacity>
+
         <TouchableOpacity style={styles.actionButton} onPress={handleWithdraw}>
-          <Icon name="arrow-down" size={20} color="#800080" />
+          <Image source={images.down_arrow} />
           <Text style={styles.actionText}>Withdraw</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.transactionsContainer}>
-        <Text style={styles.transactionsTitle}>Transactions</Text>
-        
+
+
         <View style={styles.filterContainer}>
-          <TouchableOpacity 
-            style={[styles.filterButton, filter === "all" && styles.activeFilter]} 
+          <TouchableOpacity
+            style={[styles.filterButton, filter === "all" && styles.activeFilter]}
             onPress={() => setFilter("all")}
           >
-            <Text style={[styles.filterText, filter === "all" && styles.activeFilterText]}>All</Text>
+            <Text style={[styles.filterText, filter === "all" && styles.activeFilterText]}>Earnings</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.filterButton, filter === "topup" && styles.activeFilter]} 
+          <TouchableOpacity
+            style={[styles.filterButton, filter === "topup" && styles.activeFilter]}
             onPress={() => setFilter("topup")}
           >
-            <Text style={[styles.filterText, filter === "topup" && styles.activeFilterText]}>Topup</Text>
+            <Text style={[styles.filterText, filter === "topup" && styles.activeFilterText]}>Withdrawl</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.filterButton, filter === "withdrawal" && styles.activeFilter]} 
-            onPress={() => setFilter("withdrawal")}
-          >
-            <Text style={[styles.filterText, filter === "withdrawal" && styles.activeFilterText]}>Withdrawal</Text>
-          </TouchableOpacity>
-        </View>
 
+        </View>
+        <Text style={styles.transactionsTitle}>Transactions</Text>
         <FlatList
           data={filteredTransactions}
           renderItem={renderTransactionItem}
@@ -226,7 +219,7 @@ export default function WalletScreen() {
       </View>
 
       {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
+      {/* <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.navItem}>
           <Icon name="home-outline" size={24} color="#000000" />
           <Text style={styles.navText}>Home</Text>
@@ -246,7 +239,7 @@ export default function WalletScreen() {
           <Icon name="settings-outline" size={24} color="#000000" />
           <Text style={styles.navText}>Settings</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       {/* Topup Modal */}
       <Modal
@@ -288,8 +281,8 @@ export default function WalletScreen() {
             </View>
           </View>
 
-          <TouchableOpacity 
-            style={[styles.paymentButton, isLoading && styles.disabledButton]} 
+          <TouchableOpacity
+            style={[styles.paymentButton, isLoading && styles.disabledButton]}
             onPress={handlePaymentMade}
             disabled={isLoading}
           >
@@ -366,7 +359,7 @@ export default function WalletScreen() {
               />
             </View>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.checkboxContainer}
               onPress={() => setSaveBankDetails(!saveBankDetails)}
             >
@@ -377,8 +370,8 @@ export default function WalletScreen() {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity 
-            style={[styles.paymentButton, isLoading && styles.disabledButton]} 
+          <TouchableOpacity
+            style={[styles.paymentButton, isLoading && styles.disabledButton]}
             onPress={handlePlaceWithdrawal}
             disabled={isLoading}
           >
@@ -400,8 +393,8 @@ export default function WalletScreen() {
       >
         <View style={styles.confirmationOverlay}>
           <View style={styles.confirmationContainer}>
-            <TouchableOpacity 
-              style={styles.confirmationCloseButton} 
+            <TouchableOpacity
+              style={styles.confirmationCloseButton}
               onPress={() => {
                 setConfirmationStatus("none")
                 if (confirmationStatus === "success") {
@@ -411,9 +404,9 @@ export default function WalletScreen() {
             >
               <Icon name="close" size={24} color="#000000" />
             </TouchableOpacity>
-            
+
             <Text style={styles.confirmationTitle}>Payment Confirmation</Text>
-            
+
             <View style={styles.confirmationIconContainer}>
               <View style={[
                 styles.confirmationIconOuter,
@@ -423,18 +416,18 @@ export default function WalletScreen() {
                   styles.confirmationIconInner,
                   confirmationStatus === "success" ? styles.successIconInner : styles.errorIconInner
                 ]}>
-                  <Icon 
-                    name={confirmationStatus === "success" ? "checkmark" : "close"} 
-                    size={40} 
-                    color="#FFFFFF" 
+                  <Icon
+                    name={confirmationStatus === "success" ? "checkmark" : "close"}
+                    size={40}
+                    color="#FFFFFF"
                   />
                 </View>
               </View>
             </View>
-            
+
             <Text style={styles.confirmationText}>
               {activeModal === "topup" ? (
-                confirmationStatus === "success" 
+                confirmationStatus === "success"
                   ? "Your payment has been received, and you wallet has been credit successfully"
                   : "Your payment could not be completed"
               ) : (
