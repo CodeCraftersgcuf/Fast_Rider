@@ -9,12 +9,20 @@ export type RootStackParamList = {
   User: undefined;
   UserDetails: undefined;
   ActiveDeliveries: undefined;
-  RideSummary: undefined;
-  RideDetails: undefined;
+  RideSummary: { rider?: any; amount?: string }; // optionally added if accessed directly
+  RideDetails: {
+    orderId: string;
+    status: "in_transit" | "delivered";
+    amount: string;
+  };
   RideDetailsMap: undefined;
   Address: undefined;
   SavedAddresses: undefined;
   EditAddress: { addressId: string };
+
+  BankTransferPayment?: { amount?: string }; // added ✅
+  RidesSummary?: { rider?: any; amount?: string }; // added ✅
+  RidersBid?: { amount?: string }; // added ✅
 };
 
 export type TabNavigatorParamList = {
@@ -65,7 +73,6 @@ export type SendParcelStackParamList = {
   DeliveryDetails: { rideId: string };
   DeliveredSummary: { rideId: string };
   BankTransferPayment: { amount: string };
-  RidesSummary: { rider: any; amount: string }; // ✅ CORRECTED NAME
+  RidesSummary: { rider: any; amount: string };
   RideDetailsMap: undefined;
-
 };

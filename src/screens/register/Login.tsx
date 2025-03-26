@@ -12,13 +12,19 @@ import {
 import { Eye, EyeOff } from "lucide-react-native";
 import { GradientBackground } from "./../../components/BackgroundGradient";
 import { colors } from "./../../constants/colors";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
+
+import { RootStackParamList } from "../../types"; // adjust the path to your types file
+import { useAuth } from "../../contexts/AuthContext"; // adjust path
+
+
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const { login } = useAuth();
 
   return (
     <GradientBackground>
@@ -68,7 +74,9 @@ const Login = () => {
 
             <TouchableOpacity
               style={styles.loginButton}
-              onPress={() => navigation.navigate("Verify")}
+              onPress={() => {
+                login(); // 🔥 Triggers `MainApp` to show
+              }}
             >
               <Text style={styles.loginButtonText}>Login</Text>
             </TouchableOpacity>
@@ -100,7 +108,7 @@ const Login = () => {
           </View>
         </View>
       </SafeAreaView>
-    </GradientBackground>
+    </GradientBackground >
   );
 };
 

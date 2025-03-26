@@ -28,7 +28,7 @@ const SettingOption = ({
 }: SettingOptionProps) => (
   <TouchableOpacity style={styles.settingOption} onPress={onPress}>
     <View style={[styles.iconContainer, { backgroundColor }]}>
-      <Icon name={icon} size={24} color={iconColor} />
+      <Image source={images[icon]} />
     </View>
     <Text style={styles.settingTitle}>{title}</Text>
   </TouchableOpacity>
@@ -122,9 +122,9 @@ export default function SettingsScreen() {
 
           <View style={styles.settingCard}>
             <View style={styles.settingIconContainer}>
-            <Image source={images.tier}/>
+              <Image source={images.tier} />
             </View>
-            <TouchableOpacity style={styles.settingButton}>
+            <TouchableOpacity style={styles.settingButton} onPress={() => navigation.navigate("Add", { screen: 'Tier' })}>
               <Text style={styles.settingButtonText}>Tier(3)</Text>
             </TouchableOpacity>
           </View>
@@ -133,9 +133,9 @@ export default function SettingsScreen() {
         {/* Other Settings */}
         <Text style={styles.sectionTitle}>Other Settings</Text>
         <View style={styles.otherSettingsContainer}>
-          <SettingOption icon="notifications-outline" title="Verification" onPress={() => { console.log("it is clicked"); }} />
-          <SettingOption icon="document-text-outline" title="FAQs" onPress={() => { navigation.navigate("Add", { screen: 'FAQsScreen' }) }} />
-          <SettingOption icon="notifications-outline" title="Notifications" onPress={() => { navigation.navigate("Add", { screen: "NotificationsScreen" }); console.log("it is clicked"); }} />
+          <SettingOption icon="verify" title="Verification" onPress={() => { navigation.navigate("Add", { screen: 'Verification' }); console.log("it is clicked"); }} />
+          <SettingOption icon="faq" title="FAQs" onPress={() => { navigation.navigate("Add", { screen: 'FAQsScreen' }) }} />
+          <SettingOption icon="notify" title="Notifications" onPress={() => { navigation.navigate("Add", { screen: "NotificationsScreen" }); console.log("it is clicked"); }} />
 
         </View>
 
@@ -144,7 +144,7 @@ export default function SettingsScreen() {
           <Text style={styles.logoutButtonText}>Logout</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.deleteAccountButton}>
+        <TouchableOpacity style={styles.deleteAccountButton}>Tier
           <Text style={styles.deleteAccountText}>Delete Account</Text>
         </TouchableOpacity>
       </ScrollView>

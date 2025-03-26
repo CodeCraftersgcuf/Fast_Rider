@@ -11,23 +11,26 @@ import type { SendParcelStackParamList } from "../../types/navigation"
 type DeliverySummaryNavigationProp = NativeStackNavigationProp<SendParcelStackParamList, "DeliverySummary">
 
 interface DeliverySummaryProps {
-  route: {
-    params: {
-      orderId: string
-      status: "delivered"
-      amount: string
-    }
-  }
+  route?: {
+    params?: {
+      orderId?: string;
+      status?: "delivered";
+      amount?: string;
+    };
+  };
 }
 
 export default function DeliveredSummary({ route }: DeliverySummaryProps) {
-  console.log("Indse");
-  const navigation = useNavigation<DeliverySummaryNavigationProp>()
-  const [showRatingModal, setShowRatingModal] = useState(false)
-  const [showMoreOptions, setShowMoreOptions] = useState(false)
-  const [rating, setRating] = useState(0)
-  const [review, setReview] = useState("")
-  const { orderId, amount } = route.params
+  console.log("Inside");
+  const navigation = useNavigation<DeliverySummaryNavigationProp>();
+  const [showRatingModal, setShowRatingModal] = useState(false);
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [review, setReview] = useState("");
+
+  // Safely destructure route.params, if available
+  const { orderId, amount } = route?.params || {};
+
 
 
   const handleWriteReview = () => {

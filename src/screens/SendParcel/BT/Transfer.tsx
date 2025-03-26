@@ -7,7 +7,7 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import Icon from "react-native-vector-icons/Ionicons"
 import type { SendParcelStackParamList } from "../../../types/navigation"
 import images from "../../../constants/images"
-
+import { useRoute } from '@react-navigation/native';
 
 type BankTransferPaymentNavigationProp = NativeStackNavigationProp<SendParcelStackParamList, "BankTransferPayment">
 
@@ -23,10 +23,22 @@ interface PaymentBreakdownProps {
   total: number
 }
 
+type BankTransferPaymentRouteParams = {
+  tier?: {
+    id: number;
+    title: string;
+    amount: number;
+  };
+};
 export default function BankTransferPayment() {
   const navigation = useNavigation<BankTransferPaymentNavigationProp>()
   const [isLoading, setIsLoading] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
+  const route = useRoute();
+
+  const { tier } = route.params as BankTransferPaymentRouteParams ?? {};
+
+  console.log("the data", tier);
 
   const bankDetails: BankDetailsProps = {
     bankName: "VFB Microfinance Bank",
@@ -53,8 +65,11 @@ export default function BankTransferPayment() {
     setShowConfirmation(false);
     console.log("object");
 
-    navigation.navigate("RideSummary"); // 🔥 This works
+    if (!tier) {
+      navigation.navigate("RideSummary"); // 🔥 Only navigates if tier doesn't exist
+    }
   };
+
 
   return (
     <SafeAreaView style={styles.container}>

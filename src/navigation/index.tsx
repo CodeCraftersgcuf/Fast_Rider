@@ -6,6 +6,9 @@ import { NavigationContainer } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 
+import { useAuth } from "../contexts/AuthContext"
+
+
 // Registration Screens
 import Onboard from "../screens/register/Onboard"
 import Login from "../screens/register/Login"
@@ -14,6 +17,19 @@ import Verify from "../screens/register/Verify"
 import ChangePassword from "../screens/register/ChangePassword"
 import DriverRegistration from "../screens/register/DriverRegistration"
 import HelpCenter from "../screens/register/HelpCenter"
+
+
+//Setting Screen
+import SettingsScreen from "../screens/Settings"
+import SupportScreen from "../screens/Settings/Support"
+import NotificationsScreen from "../screens/Settings/Notification"
+import EditProfileScreen from "../screens/Settings/EditProfile"
+import FAQsScreen from "../screens/Settings/FAQs"
+import WalletScreen from "../screens/Settings/Wallet"
+import Verification from "../screens/Settings/Verification"
+import VerificationForm from "../screens/Settings/VerificationForm"
+import Tier from "../screens/Settings/Tier"
+
 // Home Screens
 import User from "../screens/Home/User"
 import ActiveDeliveries from "../screens/Home/ActiveDeliveries"
@@ -53,12 +69,7 @@ import DeliveredSummary from "../screens/SendParcel/DeliveredSummary"
 // Tab Screens
 import DeliveriesScreen from "../screens/Deliveries"
 import ChatScreen from "../screens/Chat"
-import SettingsScreen from "../screens/Settings"
-import SupportScreen from "../screens/Settings/Support"
-import NotificationsScreen from "../screens/Settings/Notification"
-import EditProfileScreen from "../screens/Settings/EditProfile"
-import FAQsScreen from "../screens/Settings/FAQs"
-import WalletScreen from "../screens/Settings/Wallet"
+
 
 import { TabBar } from "../components/TabBar"
 import type { RootStackParamList, TabNavigatorParamList, SendParcelStackParamList } from "../types"
@@ -105,6 +116,9 @@ function SendParcelNavigator() {
       <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
       <Stack.Screen name="FAQsScreen" component={FAQsScreen} />
       <Stack.Screen name="WalletScreen" component={WalletScreen} />
+      <Stack.Screen name="Verification" component={Verification} />
+      <Stack.Screen name="VerificationForm" component={VerificationForm} />
+      <Stack.Screen name="Tier" component={Tier} />
     </SendParcelStack.Navigator>
   )
 }
@@ -148,7 +162,7 @@ function TabNavigator() {
         }}
       >
         <Tab.Screen name="Home" component={HomeStack} />
-        <Tab.Screen name="Deliveries" component={DeliveriesScreen} />
+        <Tab.Screen name="Deliveries" component={ParcelPaymentProcess} />
         <Tab.Screen
           name="Add"
           component={SendParcelNavigator}
@@ -191,7 +205,7 @@ function AuthStack() {
 }
 
 export function Navigation() {
-  const [isAuthenticated] = React.useState(true) // Replace with actual auth state
+  const { isAuthenticated } = useAuth();
 
   return (
     <NavigationContainer>
@@ -203,7 +217,7 @@ export function Navigation() {
         )}
       </Stack.Navigator>
     </NavigationContainer>
-  )
+  );
 }
 
 const styles = StyleSheet.create({

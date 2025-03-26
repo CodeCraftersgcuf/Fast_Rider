@@ -14,7 +14,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import Icon from "react-native-vector-icons/Ionicons";
 
+import { useAuth } from '../../contexts/AuthContext';
+
 const HelpCenter = () => {
+    const { login } = useAuth();
+
     const navigation = useNavigation();
     const [expandedIndex, setExpandedIndex] = useState<number | null>(1); // open 2nd by default
     const faqs = [
@@ -94,7 +98,8 @@ const HelpCenter = () => {
 
             {/* Button at the bottom */}
             <View style={styles.buttonContainer}>
-                <Button title="Continue" onPress={() => navigation.goBack()} />
+                <Button title="Continue" onPress={() => login()
+                } />
             </View>
         </SafeAreaView>
     );
