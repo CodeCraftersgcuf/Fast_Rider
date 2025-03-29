@@ -76,3 +76,16 @@ export type SendParcelStackParamList = {
   RidesSummary: { rider: any; amount: string };
   RideDetailsMap: undefined;
 };
+export type DeliveriesStackParamList = {
+  DeliveryMain: undefined
+  OngoingDeliveries: undefined
+  CompletedDeliveries: undefined
+  DeliveryTracking: { deliveryId: string }
+  DeliveryDetails: { deliveryId: string }
+  DeliveryFeedback: { deliveryId: string }
+  DeliveryIssue: { deliveryId: string }
+  DeliveryRating: { deliveryId: string }
+  RideHistory: undefined
+  RidesDetails: { rideId: string }
+  RideSummary: { rider: any; amount: string }
+}

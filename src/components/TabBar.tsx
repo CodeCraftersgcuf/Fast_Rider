@@ -1,13 +1,10 @@
-
 import type React from "react"
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native"
-import Icon from "react-native-vector-icons/Ionicons"
+import { View, Text, StyleSheet, TouchableOpacity, Image, ImageSourcePropType } from "react-native"
 import { colors } from "../constants/colors"
 import { theme } from "../constants/theme"
 import { useNavigation } from "@react-navigation/native"
 
-import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs"
-import { TabNavigatorParamList } from "../types"
+import images from "../constants/images"
 
 type TabBarProps = {
   activeTab: string;
@@ -19,8 +16,8 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabPress }) => {
 
   const tabs = [
     { name: "Home", icon: "home" },
-    { name: "Deliveries", icon: "bicycle" },
-    { name: "Chat", icon: "chatbubble" },
+    { name: "Deliveries", icon: "delivery" },
+    { name: "Chat", icon: "chat" },
     { name: "Settings", icon: "settings" },
   ];
 
@@ -40,10 +37,13 @@ export const TabBar: React.FC<TabBarProps> = ({ activeTab, onTabPress }) => {
           style={[styles.tab, activeTab === tab.name && styles.activeTab]}
           onPress={() => handlePress(tab.name)}
         >
-          <Icon
-            name={tab.icon}
-            size={28}
-            color={activeTab === tab.name ? colors.primary : colors.text.secondary}
+          {/* Icon with active color logic */}
+          <Image
+            source={images[tab.icon] as ImageSourcePropType}
+            style={[
+              styles.icon,
+              activeTab === tab.name && { tintColor: colors.primary }, // Change icon color when active
+            ]}
           />
           <Text style={[styles.tabLabel, activeTab === tab.name && styles.activeTabLabel]}>
             {tab.name}
@@ -104,5 +104,9 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontWeight: "600",
   },
-})
-
+  icon: {
+    width: 24,
+    height: 24,
+    resizeMode: "contain",
+  },
+});

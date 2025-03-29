@@ -132,11 +132,11 @@ export default function RidesSummary({ route }: { route: { params: { rider: any;
                 <Text style={styles.detailValue}>{rider.payOnDelivery}</Text>
               </View>
               <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Pay on delivery amount</Text>
-                <Text style={styles.detailValue}>{rider.payOnDeliveryAmount}</Text>
+                <Text style={styles.detailLabel}>Amount</Text>
+                <Text style={styles.detailValue}>₦{amount}</Text>
               </View>
               <View style={styles.detailRow}>
-                <Text style={styles.detailLabel}>Delivery fee for rider</Text>
+                <Text style={styles.detailLabel}>Delivery</Text>
                 <Text style={styles.detailValue}>₦{amount}</Text>
               </View>
             </View>

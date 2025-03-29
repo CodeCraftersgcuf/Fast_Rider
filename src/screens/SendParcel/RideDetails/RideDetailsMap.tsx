@@ -30,16 +30,19 @@ import { useRoute } from "@react-navigation/native";
 type RouteParams = {
   rider?: any;
   amount?: string;
+  delivery?: boolean,
 };
 export default function RideDetails() {
   const navigation = useNavigation();
 
   const route = useRoute();
-  const { rider, amount } = route.params as RouteParams ?? {};
+  const { rider, amount, delivery } = route.params as RouteParams ?? {};
 
   console.log("Rider:", rider);
   console.log("Amount:", amount);
+  console.log("Delivery Id:" + rider?.id);
 
+  console.log("Delivery State", delivery);
   const routeCoordinates = [
     { latitude: 40.7359, longitude: -73.9911 },
     { latitude: 40.742, longitude: -73.9885 },
@@ -63,11 +66,17 @@ export default function RideDetails() {
   const [actButtonLabel, setActButtonLabel] = useState("I have arrived for pickup");
   const [requestButtonDisabled, setRequestButtonDisabled] = useState(true);
 
+  const [deliveryState, setDeliveryState] = useState(delivery);
+
   const handleProceed = () => {
     console.log("It clicked");
     setShowConfirmationModal(true);
   }
+  const handleDeliveryProceed = () => {
 
+    navigation.navigate("DeliveryDetails", { deliveryId: rider.id })
+
+  }
   const onChatPress = () => {
     console.log("It clicked")
     navigation.navigate("Add", {
@@ -141,7 +150,7 @@ export default function RideDetails() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Icon name={icons.back} size={24} color="#000" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Ride Details</Text>
@@ -191,7 +200,7 @@ export default function RideDetails() {
             {/* Order ID Section */}
             <View style={{ alignItems: "center", flexDirection: "column", justifyContent: "center" }}>
               <Text style={styles.sectionTitle}>Order id</Text>
-              <Text style={styles.orderId}>ORD-12ESCJK3K</Text>
+              <Text style={styles.orderId}>{rider?.id ?? 'N/A'}</Text>
             </View>
 
             {/* Address Details */}
@@ -286,30 +295,43 @@ export default function RideDetails() {
           </View>
         </View>
       </ScrollView>
-      {showActButton && (
+      {deliveryState ? (
         <View style={{ paddingHorizontal: 20 }}>
           <ActButton
             icon="bicycle"
-            label={actButtonLabel}
-            onPress={handleProceed}
+            label="Track Parcel"
+            onPress={handleDeliveryProceed}
           />
         </View>
+      ) : (
+        <>
+          {showActButton && (
+            <View style={{ paddingHorizontal: 20 }}>
+              <ActButton
+                icon="bicycle"
+                label={actButtonLabel}
+                onPress={handleProceed}
+              />
+            </View>
+          )}
+
+          {showRequestButton && (
+            <View style={{ paddingHorizontal: 20, marginVertical: 10 }}>
+              <TouchableOpacity
+                style={[
+                  styles.continueButton,
+                  requestButtonDisabled && styles.disabledButton
+                ]}
+                onPress={handleNextScreen}
+                disabled={requestButtonDisabled}
+              >
+                <Text style={styles.continueButtonText}>Request payment</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </>
       )}
 
-      {showRequestButton && (
-        <View style={{ paddingHorizontal: 20, marginVertical: 10 }}>
-          <TouchableOpacity
-            style={[
-              styles.continueButton,
-              requestButtonDisabled && styles.disabledButton
-            ]}
-            onPress={handleNextScreen}
-            disabled={requestButtonDisabled}
-          >
-            <Text style={styles.continueButtonText}>Request payment</Text>
-          </TouchableOpacity>
-        </View>
-      )}
       <ContactReceiverPopup
         visible={customerDetailModal}
         onClose={() => setCustomerDetailModal(false)}

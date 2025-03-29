@@ -258,7 +258,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F5F5F5",
-    paddingTop: 30,
+    paddingBottom: 50,
+    marginTop:20,
   },
   header: {
     flexDirection: "row",
@@ -348,6 +349,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     marginRight: 12,
+    marginLeft:12,
   },
   headerChatInfo: {
     flex: 1,

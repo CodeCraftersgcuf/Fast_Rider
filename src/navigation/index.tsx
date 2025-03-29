@@ -44,6 +44,11 @@ import RidesDetails from "../screens/SendParcel/RideDetails/RidesDetails"
 //Delvieries Activity;
 import ParcelPaymentProcess from '../screens/Deliveries/Scheduled'
 
+// Delivery Screens
+import DeliveredHistory from "../screens/Deliveries/index"
+
+
+
 // Send Parcel Screens
 import LocationSelect from "../screens/SendParcel/LocationSelect"
 import AddressSelect from "../screens/SendParcel/AddressSelect"
@@ -102,11 +107,19 @@ function SendParcelNavigator() {
       <SendParcelStack.Screen name="RidesSummary" component={RidesSummary} />
       <SendParcelStack.Screen name="RideHistory" component={RideHistory} />
       <SendParcelStack.Screen name="RidesDetails" component={RidesDetails} />
-      <SendParcelStack.Screen name="DeliveryDetails" component={DeliveryDetails} />
+      <SendParcelStack.Screen
+        name="DeliveryDetails"
+        component={DeliveryDetails}
+        listeners={({ navigation }) => ({
+          focus: () => {
+            navigation.getParent()?.setParams({ hideTabBar: true })
+          },
+        })}
+      />
       <SendParcelStack.Screen name="DeliveredSummary" component={DeliveredSummary} />
       <SendParcelStack.Screen name="Chat" component={ChatScreen} />
       <Stack.Screen name="RideSummary" component={RideSummary} />
-      <Stack.Screen name="ParcelPaymentProcess" component={ParcelPaymentProcess} />
+      <Stack.Screen name="ParcelPaymentProcess" component={DeliveredHistory} />
       <Stack.Screen name="RideDetailsMap" component={RideDetailsMap} />
 
 
@@ -130,7 +143,13 @@ function HomeStack() {
       <Stack.Screen name="UserDetails" component={UserDetails} />
       <Stack.Screen name="ActiveDeliveries" component={ActiveDeliveries} />
       <Stack.Screen name="RideSummary" component={RideSummary} />
-      <Stack.Screen name="DeliveryDetails" component={DeliveryDetails} />
+      <Stack.Screen name="DeliveryDetails"
+        component={DeliveryDetails}
+        listeners={({ navigation }) => ({
+          focus: () => {
+            navigation.getParent()?.setParams({ hideTabBar: true })
+          },
+        })} />
     </Stack.Navigator>
   )
 }
@@ -162,7 +181,7 @@ function TabNavigator() {
         }}
       >
         <Tab.Screen name="Home" component={HomeStack} />
-        <Tab.Screen name="Deliveries" component={ParcelPaymentProcess} />
+        <Tab.Screen name="Deliveries" component={DeliveredHistory} />
         <Tab.Screen
           name="Add"
           component={SendParcelNavigator}

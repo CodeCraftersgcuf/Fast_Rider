@@ -44,8 +44,7 @@ export function DeliveryFeeModal({ visible, onClose, onConfirm, amount, onAmount
           </View>
 
           <Text style={styles.description}>
-            Price displayed is the estimated price for this delivery, you can edit price and send out a bid to available
-            riders
+           Type your price, make sure prices are not too high to increase chances of ride being accpeted.
           </Text>
 
           <View style={styles.priceContainer}>

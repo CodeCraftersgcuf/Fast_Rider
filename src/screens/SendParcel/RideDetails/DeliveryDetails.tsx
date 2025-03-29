@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   Image,
   ImageStyle,
   Platform,
- 
+
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MapView, { Polyline, Marker, PROVIDER_GOOGLE } from "react-native-maps";
@@ -31,8 +31,9 @@ interface TimelineItem {
 export default function DeliveryDetails() {
 
   const navigation = useNavigation();
+  const [requestButtonDisabled, setRequestButtonDisabled] = useState(false);
 
-  
+
   const timelineData: TimelineItem[] = [
     {
       date: "Feb 23",
@@ -71,13 +72,16 @@ export default function DeliveryDetails() {
     { latitude: 40.755, longitude: -73.981 },
     { latitude: 40.7616, longitude: -73.9773 },
   ];
-
+  const handleNextScreen = () => {
+    console.log("Moving to the next Screen");
+    navigation.navigate('RideSummary')
+  }
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.headerButton}
-          onPress={() => navigation.navigate("RideDetailsMap")}
+          onPress={() => navigation.goBack()}
         >
           <Icon name={icons.back} size={24} color={colors.text.primary} />
         </TouchableOpacity>
@@ -127,7 +131,7 @@ export default function DeliveryDetails() {
             <View style={styles.profileHeader}>
               <View style={styles.profileInfo}>
                 <Image
-                 source={imageSource}
+                  source={imageSource}
                   style={styles.profileImage}
                 />
                 <View style={styles.nameRating}>
@@ -215,6 +219,18 @@ export default function DeliveryDetails() {
             </View>
           </View>
         </View>
+        <View style={{ paddingHorizontal: 20, marginVertical: 10 }}>
+          <TouchableOpacity
+            style={[
+              styles.continueButton,
+              requestButtonDisabled && styles.disabledButton
+            ]}
+            onPress={handleNextScreen}
+            disabled={requestButtonDisabled}
+          >
+            <Text style={styles.continueButtonText}>Proceed</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -243,7 +259,7 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  headerButton:{
+  headerButton: {
     padding: 11,
     borderRadius: theme.borderRadius.round,
     backgroundColor: "#EBEBEB",
@@ -458,5 +474,20 @@ const styles = StyleSheet.create({
   timelineLocation: {
     fontSize: 12,
     color: "#888",
+  },
+  continueButton: {
+    backgroundColor: "#800080",
+    paddingVertical: 16,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  continueButtonText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#FFFFFF",
+  },
+  disabledButton: {
+    backgroundColor: '#800080', // example disabled button color
+    opacity: 0.5, // slightly transparent
   },
 });

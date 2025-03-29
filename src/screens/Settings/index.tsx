@@ -3,13 +3,14 @@
 "use client"
 
 import { useState } from "react"
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, Modal, ScrollView, } from "react-native"
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, Modal, ScrollView, Platform } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import Icon from "react-native-vector-icons/Ionicons"
 import type { RootStackParamList } from "../../types/navigation"
 import images from "../../constants/images"
 type SettingsScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Settings">
+import { colors } from "../../constants/colors"
 
 interface SettingOptionProps {
   icon: string
@@ -71,18 +72,36 @@ export default function SettingsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       {/* Profile Header */}
+      {/* Profile Header */}
       <View style={styles.profileHeader}>
-        <Image source={userProfile.avatar} style={styles.profileAvatar} />
-        <View style={styles.profileInfo}>
+        <View style={styles.profileLeftSection}>
+          <Image source={userProfile.avatar} style={styles.profileAvatar} />
+          <TouchableOpacity style={styles.editProfileButton} onPress={handleEditProfile}>
+            <Text style={styles.editProfileText}>Edit Profile</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.profileRightSection}>
           <Text style={styles.profileName}>{userProfile.name}</Text>
           <View style={styles.locationContainer}>
             <Text style={styles.locationText}>{userProfile.location}</Text>
-            <Icon name="chevron-down" size={16} color="#FFFFFF" />
+            <View style={styles.triangleDown} />
+          </View>
+
+          {/* Contact Info Card */}
+          <View style={styles.contactCard}>
+            <View style={styles.contactInfo}>
+              <Text style={styles.contactLabel}>Phone</Text>
+              <Text style={styles.contactValue}>{userProfile.phone}</Text>
+            </View>
+
+
+            <View style={styles.contactInfo}>
+              <Text style={styles.contactLabel}>Email</Text>
+              <Text style={styles.contactValue}>{userProfile.email}</Text>
+            </View>
           </View>
         </View>
-        <TouchableOpacity style={styles.editProfileButton} onPress={handleEditProfile}>
-          <Text style={styles.editProfileText}>Edit Profile</Text>
-        </TouchableOpacity>
       </View>
 
       {/* Contact Info */}
@@ -179,74 +198,92 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F5F5F5",
+
   },
   profileHeader: {
-    backgroundColor: "#800080",
-    paddingTop: 50,
+    backgroundColor: colors.primary,
+    paddingTop: Platform.OS === 'ios' ? 0 : 40,
     paddingBottom: 20,
     paddingHorizontal: 20,
     flexDirection: "row",
+  },
+  profileLeftSection: {
     alignItems: "center",
+    marginRight: 16,
+  },
+  profileRightSection: {
+    flex: 1,
+
   },
   profileAvatar: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    marginRight: 16,
-  },
-  profileInfo: {
-    flex: 1,
+    marginBottom: 8,
   },
   profileName: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "600",
-    color: "#FFFFFF",
+    color: colors.white,
     marginBottom: 4,
   },
   locationContainer: {
     flexDirection: "row",
     alignItems: "center",
+    marginBottom: 12,
   },
   locationText: {
     fontSize: 14,
-    color: "#FFFFFF",
+    color: colors.white,
     marginRight: 4,
   },
+  triangleDown: {
+    width: 0,
+    height: 0,
+    backgroundColor: 'transparent',
+    borderStyle: 'solid',
+    borderLeftWidth: 5,
+    borderRightWidth: 5,
+    borderTopWidth: 8,
+    borderLeftColor: 'transparent',
+    borderRightColor: 'transparent',
+    borderTopColor: colors.white,
+  },
   editProfileButton: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.white,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
+    marginTop: 8,
   },
   editProfileText: {
     fontSize: 14,
-    color: "#000000",
+    color: colors.black,
     fontWeight: "500",
   },
-  contactInfoContainer: {
-    backgroundColor: "#800080",
+  contactCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 12,
     flexDirection: "row",
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomLeftRadius: 16,
-    borderBottomRightRadius: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 12,
   },
   contactInfo: {
     flex: 1,
   },
   contactLabel: {
     fontSize: 12,
-    color: "#FFFFFF",
+    color: colors.white,
     opacity: 0.8,
     marginBottom: 4,
   },
   contactValue: {
-    fontSize: 14,
-    color: "#FFFFFF",
+    fontSize: 8,
+    color: colors.white,
   },
   contactDivider: {
     width: 1,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: colors.white,
     opacity: 0.3,
     marginHorizontal: 16,
   },
@@ -292,7 +329,7 @@ const styles = StyleSheet.create({
   },
   settingButtonText: {
     color: "#FFFFFF",
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "500",
   },
   otherSettingsContainer: {
@@ -316,7 +353,7 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   settingTitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#000000",
   },
   logoutButton: {
@@ -327,7 +364,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   logoutButtonText: {
-    fontSize: 16,
+    fontSize: 14,
     color: "#000000",
     fontWeight: "500",
   },

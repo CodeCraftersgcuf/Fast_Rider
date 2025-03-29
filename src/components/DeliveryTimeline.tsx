@@ -33,7 +33,7 @@ export function DeliveryTimeline() {
       time: '01:23 AM',
       status: 'Package delivered',
       location: 'Iseyin, Oyo state',
-      completed: false,
+      completed: true,
     },
   ];
 

@@ -51,7 +51,7 @@ const Onboard = () => {
         <Text style={styles.description}>{item.description}</Text>
         <ActButton
           icon="bicycle"
-          label="Send Parcel"
+          label="Get Started"
           onPress={handleProceed}
         />
       </View>

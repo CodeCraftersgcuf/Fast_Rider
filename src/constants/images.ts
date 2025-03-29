@@ -19,6 +19,10 @@ const verify = require("../assets/images/verify.png");
 const faq = require("../assets/images/faq.png");
 const notify = require("../assets/images/notify.png");
 const pause= require("../assets/images/pause.png");
+const home = require("../assets/images/home.png");
+const delivery = require("../assets/images/delivery.png");
+const chat = require("../assets/images/chat.png");
+const settings = require("../assets/images/settings.png");
 
 const images = {
   rider_onboarding,
@@ -41,7 +45,11 @@ const images = {
   verify,
   faq,
   notify,
-  pause
+  pause,
+  home,
+  delivery,
+  chat,
+  settings
 };
 
 export default images;

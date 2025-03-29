@@ -123,7 +123,7 @@ export default function EditProfileScreen() {
       </TouchableOpacity>
 
       {/* Bottom Navigation */}
-      <View style={styles.bottomNav}>
+      {/* <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.navItem}>
           <Icon name="home-outline" size={24} color="#000000" />
           <Text style={styles.navText}>Home</Text>
@@ -143,7 +143,7 @@ export default function EditProfileScreen() {
           <Icon name="settings" size={24} color="#800080" />
           <Text style={[styles.navText, styles.activeNavText]}>Settings</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       {/* Password Change Modal */}
       <Modal

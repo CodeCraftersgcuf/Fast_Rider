@@ -20,6 +20,7 @@ import { colors } from "../../../constants/colors";
 import { theme } from "../../../constants/theme";
 import { icons } from "../../../constants/icons";
 import { useNavigation } from "@react-navigation/native";
+import images from "../../../constants/images";
 
 const deliveryDetails = {
   senderInfo: [
@@ -38,8 +39,8 @@ const deliveryDetails = {
   ],
   deliveryInfo: [
     { label: "Pay on delivery", value: "Yes" },
-    { label: "Amount", value: "N20,000" },
-    { label: "Delivery", value: "N2,000" },
+    { label: "Pay on delivery amount", value: "N20,000" },
+    { label: "Delivery fee for rider", value: "N2,000" },
   ],
 };
 const ReviewItem = ({
@@ -104,7 +105,7 @@ export default function RideSummary() {
 
         <TouchableOpacity
           style={styles.headerButton}
-          onPress={() => navigation.navigate("RideDetails")}
+          onPress={() => navigation.goBack()}
         >
           <Icon name={icons.back} size={24} color={colors.text.primary} />
         </TouchableOpacity>
@@ -242,6 +243,7 @@ export default function RideSummary() {
         </View>
 
         <DeliveryTimeline />
+
         <TouchableOpacity style={styles.reviewButton} onPress={handleWriteReview}>
           <Text style={styles.reviewButtonText}>Write a review</Text>
         </TouchableOpacity>
