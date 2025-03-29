@@ -16,7 +16,7 @@ export default function EditProfileScreen() {
   const [name, setName] = useState("Qamardeen Malik")
   const [phoneNumber, setPhoneNumber] = useState("07033484845")
   const [isLoading, setIsLoading] = useState(false)
-  
+
   // Password change modal states
   const [passwordChangeStep, setPasswordChangeStep] = useState<PasswordChangeStep>("none")
   const [email, setEmail] = useState("")
@@ -102,16 +102,16 @@ export default function EditProfileScreen() {
           />
         </View>
 
-        <TouchableOpacity 
-          style={styles.changePasswordButton} 
+        <TouchableOpacity
+          style={styles.changePasswordButton}
           onPress={handleChangePassword}
         >
           <Text style={styles.changePasswordText}>Change Password</Text>
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity 
-        style={styles.saveButton} 
+      <TouchableOpacity
+        style={styles.saveButton}
         onPress={handleSave}
         disabled={isLoading}
       >
@@ -156,9 +156,9 @@ export default function EditProfileScreen() {
             <TouchableOpacity style={styles.closeButton} onPress={closePasswordModal}>
               <Icon name="close" size={24} color="#000000" />
             </TouchableOpacity>
-            
+
             <Text style={styles.modalTitle}>Change Password</Text>
-            
+
             {passwordChangeStep === "email" && (
               <>
                 <Text style={styles.modalLabel}>Email Address</Text>
@@ -169,8 +169,8 @@ export default function EditProfileScreen() {
                   onChangeText={setEmail}
                   keyboardType="email-address"
                 />
-                <TouchableOpacity 
-                  style={styles.modalButton} 
+                <TouchableOpacity
+                  style={styles.modalButton}
                   onPress={handleEmailSubmit}
                 >
                   <Text style={styles.modalButtonText}>Proceed</Text>
@@ -188,8 +188,8 @@ export default function EditProfileScreen() {
                   onChangeText={setOtp}
                   keyboardType="number-pad"
                 />
-                <TouchableOpacity 
-                  style={styles.modalButton} 
+                <TouchableOpacity
+                  style={styles.modalButton}
                   onPress={handleOtpSubmit}
                 >
                   <Text style={styles.modalButtonText}>Proceed</Text>
@@ -215,8 +215,8 @@ export default function EditProfileScreen() {
                   onChangeText={setConfirmPassword}
                   secureTextEntry
                 />
-                <TouchableOpacity 
-                  style={styles.modalButton} 
+                <TouchableOpacity
+                  style={styles.modalButton}
                   onPress={handlePasswordSubmit}
                 >
                   <Text style={styles.modalButtonText}>Save</Text>
@@ -308,6 +308,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     height: 56,
+    marginBottom: 110,
   },
   saveButtonText: {
     color: "white",

@@ -48,7 +48,7 @@ export default function SettingsScreen() {
   }
 
   const handleEditProfile = () => {
-    navigation.navigate("Add", { screen: "EditProfileScreen" })
+    navigation.navigate("EditProfileScreen")
   }
 
   const handleLogout = () => {
@@ -67,7 +67,7 @@ export default function SettingsScreen() {
 
   const handleSupport = () => {
     console.log("clicked support");
-    navigation.navigate("Add", { screen: 'SupportScreen' })
+    navigation.navigate('SupportScreen')
   }
   return (
     <SafeAreaView style={styles.container}>
@@ -125,7 +125,7 @@ export default function SettingsScreen() {
             <View style={styles.settingIconContainer}>
               <Icon name="wallet-outline" size={24} color="#800080" />
             </View>
-            <TouchableOpacity style={styles.settingButton} onPress={() => { navigation.navigate("Add", { screen: "WalletScreen" }) }}>
+            <TouchableOpacity style={styles.settingButton} onPress={() => { navigation.navigate("WalletScreen") }}>
               <Text style={styles.settingButtonText}>Wallet</Text>
             </TouchableOpacity>
           </View>
@@ -143,7 +143,7 @@ export default function SettingsScreen() {
             <View style={styles.settingIconContainer}>
               <Image source={images.tier} />
             </View>
-            <TouchableOpacity style={styles.settingButton} onPress={() => navigation.navigate("Add", { screen: 'Tier' })}>
+            <TouchableOpacity style={styles.settingButton} onPress={() => navigation.navigate('Tier')}>
               <Text style={styles.settingButtonText}>Tier(3)</Text>
             </TouchableOpacity>
           </View>
@@ -152,9 +152,9 @@ export default function SettingsScreen() {
         {/* Other Settings */}
         <Text style={styles.sectionTitle}>Other Settings</Text>
         <View style={styles.otherSettingsContainer}>
-          <SettingOption icon="verify" title="Verification" onPress={() => { navigation.navigate("Add", { screen: 'Verification' }); console.log("it is clicked"); }} />
-          <SettingOption icon="faq" title="FAQs" onPress={() => { navigation.navigate("Add", { screen: 'FAQsScreen' }) }} />
-          <SettingOption icon="notify" title="Notifications" onPress={() => { navigation.navigate("Add", { screen: "NotificationsScreen" }); console.log("it is clicked"); }} />
+          <SettingOption icon="verify" title="Verification" onPress={() => { navigation.navigate('Verification'); console.log("it is clicked"); }} />
+          <SettingOption icon="faq" title="FAQs" onPress={() => { navigation.navigate('FAQsScreen') }} />
+          <SettingOption icon="notify" title="Notifications" onPress={() => { navigation.navigate("NotificationsScreen"); console.log("it is clicked"); }} />
 
         </View>
 

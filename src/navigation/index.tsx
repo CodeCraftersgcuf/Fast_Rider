@@ -84,6 +84,7 @@ import { useNavigation } from "@react-navigation/native";
 const Stack = createNativeStackNavigator<RootStackParamList>()
 const Tab = createBottomTabNavigator<TabNavigatorParamList>()
 const SendParcelStack = createNativeStackNavigator<SendParcelStackParamList>()
+const SettingsStack = createNativeStackNavigator<SettingsStackParamList>()
 
 function SendParcelNavigator() {
 
@@ -153,7 +154,21 @@ function HomeStack() {
     </Stack.Navigator>
   )
 }
-
+function SettingsNavigator() {
+  return (
+    <SettingsStack.Navigator screenOptions={{ headerShown: false }}>
+      <SettingsStack.Screen name="SettingsMain" component={SettingsScreen} />
+      <Stack.Screen name="SupportScreen" component={SupportScreen} />
+      <Stack.Screen name="NotificationsScreen" component={NotificationsScreen} />
+      <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
+      <Stack.Screen name="FAQsScreen" component={FAQsScreen} />
+      <Stack.Screen name="WalletScreen" component={WalletScreen} />
+      <Stack.Screen name="Verification" component={Verification} />
+      <Stack.Screen name="VerificationForm" component={VerificationForm} />
+      <Stack.Screen name="Tier" component={Tier} />
+    </SettingsStack.Navigator>
+  )
+}
 function TabNavigator() {
   const [activeTab, setActiveTab] = React.useState("Home")
   const [isSendParcelVisible, setIsSendParcelVisible] = React.useState(false)
@@ -191,7 +206,7 @@ function TabNavigator() {
           }}
         />
         <Tab.Screen name="Chat" component={ChatScreen} />
-        <Tab.Screen name="Settings" component={SettingsScreen} />
+        <Tab.Screen name="Settings" component={SettingsNavigator} options={{ tabBarButton: () => null }} />
       </Tab.Navigator>
 
       {!isSendParcelVisible && (
@@ -206,6 +221,7 @@ function TabNavigator() {
     </>
   )
 }
+
 
 function AuthStack() {
   return (

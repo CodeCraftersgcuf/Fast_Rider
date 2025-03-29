@@ -21,9 +21,10 @@ export default function Tier() {
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity style={styles.backButton}>
+                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                     <Icon name="chevron-back" size={24} color="#FFFFFF" />
                 </TouchableOpacity>
+
                 <View style={styles.headerRight}>
                     <TouchableOpacity style={styles.notificationButton}>
                         <Icon name="notifications" size={24} color="#FFFFFF" />
