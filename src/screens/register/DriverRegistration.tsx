@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -20,10 +20,18 @@ import images from '../../constants/images';
 import * as ImagePicker from 'expo-image-picker';
 
 
+//Code related to the integration
+import { riderVerification1, riderVerification2, riderVerification3 } from './../../utils/mutations/authMutations';
+import { useMutation } from '@tanstack/react-query';
+import Toast from "react-native-toast-message";
+import { getFromStorage } from "../../utils/storage";
+
+
 const TOTAL_STEPS = 3;
 
 const DriverRegistration = () => {
     const navigation = useNavigation();
+    const [token, setToken] = useState<string | null>(null); // State to hold the token
 
     const [step, setStep] = useState(0);
 
@@ -45,11 +53,49 @@ const DriverRegistration = () => {
     const [permitUri, setPermitUri] = useState('');
     const [vehicleVideoUri, setVehicleVideoUri] = useState('');
 
+    // Fetch the token and user data when the component mounts
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const fetchedToken = await getFromStorage("authToken");
+            setToken(fetchedToken);
+            console.log("🔹 Retrieved Token:", fetchedToken);
+        };
+
+        fetchUserData();
+    }, []);
+
     const handleNext = () => {
-        if (step < TOTAL_STEPS - 1) {
-            setStep(prev => prev + 1);
-        } else {
-            navigation.navigate('HelpCenter' as never);
+        if (step === 0) {
+            submitStep1({
+                first_name: firstName,
+                last_name: lastName,
+                email_address: email,
+                phone,
+                address,
+                nin_number: nin,
+            });
+        } else if (step === 1) {
+            submitStep2({
+                vehicle_type: vehicleType,
+                plate_number: plateNumber,
+                riders_permit_number: permitNumber,
+                color: vehicleColor,
+            });
+        } else if (step === 2) {
+            // Convert URIs to File objects for upload
+            const uriToFile = (uri: string, name: string, type: string): any => {
+                return {
+                    uri,
+                    name,
+                    type,
+                };
+            };
+
+            submitStep3({
+                passport_photo: passportUri ? uriToFile(passportUri, "passport.jpg", "image/jpeg") : null,
+                rider_permit_upload: permitUri ? uriToFile(permitUri, "permit.jpg", "image/jpeg") : null,
+                vehicle_video: vehicleVideoUri ? uriToFile(vehicleVideoUri, "video.mp4", "video/mp4") : null,
+            });
         }
     };
 
@@ -70,6 +116,67 @@ const DriverRegistration = () => {
             setter(result.assets[0].uri);
         }
     };
+
+    //Code related to the Mutation
+    // Step 1: Personal Info
+    const { mutate: submitStep1, isPending: isSubmittingStep1 } = useMutation({
+        mutationFn: (data: any) => riderVerification1({ data, token }),
+        onSuccess: (response) => {
+            console.log("✅ Step 1 Response:", response);
+            Toast.show({
+                type: "success",
+                text1: "Step 1 Completed",
+            });
+            setStep(1);
+        },
+        onError: () => {
+            Toast.show({
+                type: "error",
+                text1: "Failed",
+                text2: "Please check your details and try again",
+            });
+        },
+    });
+
+    // Step 2: Vehicle Info
+    const { mutate: submitStep2, isPending: isSubmittingStep2 } = useMutation({
+        mutationFn: (data: any) => riderVerification2({ data, token }),
+        onSuccess: (response) => {
+            console.log("✅ Step 2 Response:", response);
+            Toast.show({
+                type: "success",
+                text1: "Step 2 Completed",
+            });
+            setStep(2);
+        },
+        onError: () => {
+            Toast.show({
+                type: "error",
+                text1: "Failed",
+                text2: "Please check your vehicle info and try again",
+            });
+        },
+    });
+
+    // Step 3: Upload Documents
+    const { mutate: submitStep3, isPending: isSubmittingStep3 } = useMutation({
+        mutationFn: (files: any) => riderVerification3({ files, token }),
+        onSuccess: (response) => {
+            console.log("✅ Step 3 Response:", response);
+            Toast.show({
+                type: "success",
+                text1: "Documents Submitted",
+            });
+            navigation.navigate("HelpCenter" as never);
+        },
+        onError: () => {
+            Toast.show({
+                type: "error",
+                text1: "Failed",
+                text2: "Error uploading documents",
+            });
+        },
+    });
 
     const renderStepContent = () => {
         switch (step) {
@@ -127,11 +234,28 @@ const DriverRegistration = () => {
                             value={nin}
                             onChangeText={setNin}
                         />
-
                         <Button
-                            title={step === TOTAL_STEPS - 1 ? 'Finish Registration' : 'Save and Continue'}
+                            title={
+                                step === 0
+                                    ? isSubmittingStep1
+                                        ? "Submitting..."
+                                        : "Save and Continue"
+                                    : step === 1
+                                        ? isSubmittingStep2
+                                            ? "Submitting..."
+                                            : "Save and Continue"
+                                        : isSubmittingStep3
+                                            ? "Uploading..."
+                                            : "Finish Registration"
+                            }
                             onPress={handleNext}
+                            disabled={
+                                (step === 0 && isSubmittingStep1) ||
+                                (step === 1 && isSubmittingStep2) ||
+                                (step === 2 && isSubmittingStep3)
+                            }
                         />
+
                     </View>
                 );
             case 1:
@@ -314,6 +438,7 @@ const DriverRegistration = () => {
 
                         {renderStepContent()}
                     </View>
+                    <Toast />
                 </ScrollView>
             </SafeAreaView>
         </GradientBackground>

@@ -13,12 +13,60 @@ import { PasswordInput } from './../../components/PasswordInput';
 import { Button } from './../../components/Button';
 import { colors } from './../../constants/colors';
 
+
+//Code realted to the integration
+import { signUpUser } from './../../utils/mutations/authMutations';
+import { useMutation } from '@tanstack/react-query';
+import Toast from "react-native-toast-message";
+import { saveToStorage } from "../../utils/storage";
+
+type SignupInput = {
+  name: string;
+  phone: string;
+  email: string;
+  password: string;
+};
+
+
 const SignUp = () => {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation();
+
+  const { isPending: isSigningUp, mutate: mutateSignUp } = useMutation<any, Error, SignupInput>({
+    mutationFn: (data) => signUpUser(data),
+
+    onSuccess: async (response) => {
+      console.log("✅ Sign up successful:", response);
+
+      Toast.show({
+        type: "success",
+        text1: "Account created",
+        text2: "Please verify your email to continue",
+      });
+
+      const userEmail = response?.data?.email || email;
+
+      // Save token only if it exists
+      if (response.data.token) {
+        await saveToStorage("authToken", response.data.token);
+      }
+
+      navigation.navigate("Verify" as never, { email: userEmail } as never);
+    },
+
+    onError: (error) => {
+      console.error("❌ Sign up failed:", error);
+
+      Toast.show({
+        type: "error",
+        text1: "Sign up failed",
+        text2: "Please check your details and try again",
+      });
+    },
+  });
 
   return (
     <GradientBackground>
@@ -40,11 +88,6 @@ const SignUp = () => {
                 <Text style={styles.loginLink}>Login</Text>
               </TouchableOpacity>
             </View>
-
-
-
-
-
             <FormInput
               label="Full Name"
               value={fullName}
@@ -77,8 +120,14 @@ const SignUp = () => {
             />
 
             <Button
-              title="Create an Account"
-              onPress={() => navigation.navigate('Verify')}
+              title={isSigningUp ? "Creating Account..." : "Create an Account"}
+              disabled={!fullName || !email || !phone || !password || isSigningUp}
+              onPress={() => mutateSignUp({
+                name: fullName,
+                phone,
+                email,
+                password,
+              })}
             />
 
             <Text style={styles.termsText}>
@@ -88,6 +137,7 @@ const SignUp = () => {
             </Text>
           </View>
         </View>
+        <Toast />
       </SafeAreaView>
     </GradientBackground>
   );

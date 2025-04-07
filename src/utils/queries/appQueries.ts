@@ -1,6 +1,5 @@
-import { API_ENDPOINTS } from "@/apiConfig";
+import { API_ENDPOINTS } from "../../../apiConfig";
 import { apiCall } from "../customApiCall";
-import { string } from "yup";
 
 export const getMarketData = async ({
   token,
