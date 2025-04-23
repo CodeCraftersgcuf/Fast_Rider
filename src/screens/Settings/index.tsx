@@ -2,7 +2,7 @@
 
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, Modal, ScrollView, Platform } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack"
@@ -11,6 +11,9 @@ import type { RootStackParamList } from "../../types/navigation"
 import images from "../../constants/images"
 type SettingsScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "Settings">
 import { colors } from "../../constants/colors"
+
+//
+import { getFromStorage } from "../../utils/storage";
 
 interface SettingOptionProps {
   icon: string
@@ -36,16 +39,28 @@ const SettingOption = ({
 )
 
 export default function SettingsScreen() {
+  const [userData, setUserData] = useState<any>(null); // You can type this more strictly later
+
   const navigation = useNavigation<SettingsScreenNavigationProp>()
   const [showLogoutModal, setShowLogoutModal] = useState(false)
 
-  const userProfile = {
-    name: "Qamardeen Malik",
-    location: "Lagos, Ng",
-    phone: "07033484845",
-    email: "qamardeenmalik@gmail.com",
-    avatar: require("../../assets/images/pp.png"),
-  }
+
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const fetchedToken = await getFromStorage("authToken");
+      const fetchedUser = await getFromStorage("user");
+
+      setUserData(fetchedUser);
+
+      console.log("🔹 Retrieved Token:", fetchedToken);
+      console.log("👤 Retrieved User:", fetchedUser);
+    };
+
+    fetchUserData();
+  }, []);
+
+
 
   const handleEditProfile = () => {
     navigation.navigate("EditProfileScreen")
@@ -75,47 +90,57 @@ export default function SettingsScreen() {
       {/* Profile Header */}
       <View style={styles.profileHeader}>
         <View style={styles.profileLeftSection}>
-          <Image source={userProfile.avatar} style={styles.profileAvatar} />
+          <Image
+            source={userData?.avatar ? { uri: userData.avatar } : require("../../assets/images/pp.png")}
+            style={styles.profileAvatar}
+          />
           <TouchableOpacity style={styles.editProfileButton} onPress={handleEditProfile}>
             <Text style={styles.editProfileText}>Edit Profile</Text>
           </TouchableOpacity>
         </View>
 
-        <View style={styles.profileRightSection}>
-          <Text style={styles.profileName}>{userProfile.name}</Text>
-          <View style={styles.locationContainer}>
-            <Text style={styles.locationText}>{userProfile.location}</Text>
-            <View style={styles.triangleDown} />
-          </View>
+        {userData && (
+          <>
+            <View style={styles.profileRightSection}>
+              <Text style={styles.profileName}>{userData.name}</Text>
+              <View style={styles.locationContainer}>
+                <Text style={styles.locationText}>Nigeria</Text>
+                <View style={styles.triangleDown} />
+              </View>
 
-          {/* Contact Info Card */}
-          <View style={styles.contactCard}>
-            <View style={styles.contactInfo}>
-              <Text style={styles.contactLabel}>Phone</Text>
-              <Text style={styles.contactValue}>{userProfile.phone}</Text>
+              {/* Contact Info Card */}
+              <View style={styles.contactCard}>
+                <View style={styles.contactInfo}>
+                  <Text style={styles.contactLabel}>Phone</Text>
+                  <Text style={styles.contactValue}>{userData.phone}</Text>
+                </View>
+
+                <View style={styles.contactInfo}>
+                  <Text style={styles.contactLabel}>Email</Text>
+                  <Text style={styles.contactValue}>{userData.email}</Text>
+                </View>
+              </View>
             </View>
+          </>
+        )}
 
-
-            <View style={styles.contactInfo}>
-              <Text style={styles.contactLabel}>Email</Text>
-              <Text style={styles.contactValue}>{userProfile.email}</Text>
-            </View>
-          </View>
-        </View>
       </View>
 
       {/* Contact Info */}
-      <View style={styles.contactInfoContainer}>
-        <View style={styles.contactInfo}>
-          <Text style={styles.contactLabel}>Phone</Text>
-          <Text style={styles.contactValue}>{userProfile.phone}</Text>
+      {userData && (
+        <View style={styles.contactInfoContainer}>
+          <View style={styles.contactInfo}>
+            <Text style={styles.contactLabel}>Phone</Text>
+            <Text style={styles.contactValue}>{userData.phone}</Text>
+          </View>
+          <View style={styles.contactDivider} />
+          <View style={styles.contactInfo}>
+            <Text style={styles.contactLabel}>Email</Text>
+            <Text style={styles.contactValue}>{userData.email}</Text>
+          </View>
         </View>
-        <View style={styles.contactDivider} />
-        <View style={styles.contactInfo}>
-          <Text style={styles.contactLabel}>Email</Text>
-          <Text style={styles.contactValue}>{userProfile.email}</Text>
-        </View>
-      </View>
+      )}
+
 
       <ScrollView style={styles.settingsContainer}>
         {/* General Settings */}
