@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, TextInput, Modal, ActivityIndicator, Image } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack"
@@ -11,7 +11,22 @@ type EditProfileScreenNavigationProp = NativeStackNavigationProp<RootStackParamL
 
 type PasswordChangeStep = "email" | "otp" | "newPassword" | "none"
 
+//Code Related to the integration;
+import { useMutation } from "@tanstack/react-query"
+import { editProfile } from "../../utils/mutations/accountMutations"
+import Toast from "react-native-toast-message";
+import { getFromStorage } from "../../utils/storage";
+import { forgotPassword, verifyPasswordOTP, resetPassword } from "../../utils/mutations/authMutations"
+
+import * as ImagePicker from 'expo-image-picker';
+import { Platform } from 'react-native';
+import * as FileSystem from 'expo-file-system'; // For MIME type if needed
+
+
 export default function EditProfileScreen() {
+  const [token, setToken] = useState<string | null>(null); // State to hold the token
+  const [profileImage, setProfileImage] = useState<any>(null);
+
   const navigation = useNavigation<EditProfileScreenNavigationProp>()
   const [name, setName] = useState("Qamardeen Malik")
   const [phoneNumber, setPhoneNumber] = useState("07033484845")
@@ -23,34 +38,230 @@ export default function EditProfileScreen() {
   const [otp, setOtp] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+ 
+  
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const fetchedToken = await getFromStorage("authToken");
+      setToken(fetchedToken);
+      console.log("🔹 Retrieved Token:", fetchedToken);
+    };
+
+    fetchUserData();
+  }, []);
+  const { mutate: editProfileMutate } = useMutation({
+    mutationFn: async () => {
+      if (!token) return;
+
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("phone", phoneNumber);
+
+      if (profileImage) {
+        formData.append("profile_picture", {
+          uri: profileImage.uri,
+          name: profileImage.name,
+          type: profileImage.type,
+        } as any); // ✅ FormData entry for image
+      }
+
+      const response = await editProfile({
+        data: formData,
+        token,
+      });
+
+      return response;
+    },
+    onSuccess: (data) => {
+      console.log("🔹 Edit Profile Response:", data);
+      Toast.show({
+        type: "success",
+        text1: "Profile updated successfully",
+      });
+    },
+    onError: (error) => {
+      console.error("🔹 Edit Profile Error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Failed to update profile",
+      });
+    },
+  });
+
+  // Forgot Password
+  const { mutate: forgotPasswordMutate, isPending: isSendingEmail } = useMutation({
+    mutationFn: forgotPassword,
+    onSuccess: (data) => {
+      console.log("The Data of the email coming", data);
+      Toast.show({
+        type: "success",
+        text1: "Email sent!",
+        text2: "Check your inbox for the OTP.",
+      });
+      setPasswordChangeStep("otp"); // Proceed to next step
+    },
+    onError: (error: any) => {
+      console.error("🔹 Forgot Password Error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Failed to send email",
+      });
+    },
+  });
+
+  // Verify OTP
+  const { mutate: verifyOtpMutate, isPending: isVerifyingOtp } = useMutation({
+    mutationFn: verifyPasswordOTP,
+    onSuccess: () => {
+      Toast.show({
+        type: "success",
+        text1: "OTP Verified!",
+      });
+      setPasswordChangeStep("newPassword");
+    },
+    onError: (error: any) => {
+      console.error("🔹 OTP Verification Error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Invalid OTP",
+      });
+    },
+  });
+
+  // Reset Password
+  const { mutate: resetPasswordMutate, isPending: isResetting } = useMutation({
+    mutationFn: resetPassword,
+    onSuccess: () => {
+      Toast.show({
+        type: "success",
+        text1: "Password reset successful",
+      });
+      closePasswordModal(); // Reset all states
+    },
+    onError: (error: any) => {
+      console.error("🔹 Reset Password Error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Failed to reset password",
+      });
+    },
+  });
+
+
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets.length > 0) {
+      const selected = result.assets[0];
+
+      const localUri = selected.uri;
+      const filename = localUri.split("/").pop() || "profile.jpg";
+
+      // Try to infer the type
+      const match = /\.(\w+)$/.exec(filename || "");
+      const type = match ? `image/${match[1]}` : "image";
+
+      setProfileImage({
+        uri: localUri,
+        name: filename,
+        type: type,
+      });
+    }
+  };
   const handleSave = () => {
-    setIsLoading(true)
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
-      navigation.goBack()
-    }, 1500)
-  }
+    if (!token) return;
+
+    if (!name.trim()) {
+      Toast.show({
+        type: "error",
+        text1: "Missing Name",
+        text2: "Please enter your full name.",
+      });
+      return;
+    }
+
+    if (!phoneNumber.trim()) {
+      Toast.show({
+        type: "error",
+        text1: "Missing Phone Number",
+        text2: "Please enter your phone number.",
+      });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("phone", phoneNumber);
+
+    if (profileImage?.uri) {
+      const file = {
+        uri: profileImage.uri,
+        name: profileImage.fileName || "profile.jpg", // Fallback name
+        type: profileImage.type || "image/jpeg",      // Ensure valid type
+      };
+
+      formData.append("profile_picture", file as any);
+    }
+
+    setIsLoading(true);
+    editProfileMutate(
+      { data: formData, token },
+      {
+        onSettled: () => {
+          setIsLoading(false);
+        },
+      }
+    );
+  };
+
 
   const handleChangePassword = () => {
     setPasswordChangeStep("email")
   }
 
   const handleEmailSubmit = () => {
-    // Simulate sending OTP
-    setPasswordChangeStep("otp")
-  }
+    if (!email.trim()) {
+      Toast.show({
+        type: "error",
+        text1: "Missing Email",
+      });
+      return;
+    }
+
+    forgotPasswordMutate({ email });
+  };
 
   const handleOtpSubmit = () => {
-    // Simulate OTP verification
-    setPasswordChangeStep("newPassword")
-  }
+    if (!otp.trim()) {
+      Toast.show({
+        type: "error",
+        text1: "Enter OTP",
+      });
+      return;
+    }
 
-  const handlePasswordSubmit = () => {
-    // Simulate password change
-    setPasswordChangeStep("none")
-  }
+    verifyOtpMutate({ email, otp });
+  }; const handlePasswordSubmit = () => {
+    if (!newPassword || newPassword !== confirmPassword) {
+      Toast.show({
+        type: "error",
+        text1: "Passwords don't match",
+      });
+      return;
+    }
+
+    resetPasswordMutate({
+      email,
+      password: newPassword,
+      password_confirmation: confirmPassword,
+    });
+  };
 
   const closePasswordModal = () => {
     setPasswordChangeStep("none")
@@ -72,15 +283,20 @@ export default function EditProfileScreen() {
 
       <View style={styles.content}>
         {/* Profile Image */}
-        <View style={styles.profileImageContainer}>
+        <TouchableOpacity onPress={pickImage} style={styles.profileImageContainer}>
           {isLoading ? (
             <ActivityIndicator size="large" color="#800080" />
           ) : (
             <View style={styles.gradientBorder}>
-              {/* This is a placeholder for the gradient border */}
+              {profileImage?.uri ? (
+                <Image source={{ uri: profileImage.uri }} style={styles.profileImage} />
+              ) : (
+                <Icon name="camera-outline" size={28} color="#aaa" />
+              )}
             </View>
           )}
-        </View>
+        </TouchableOpacity>
+
 
         {/* Form Fields */}
         <View style={styles.formGroup}>
@@ -122,28 +338,6 @@ export default function EditProfileScreen() {
         )}
       </TouchableOpacity>
 
-      {/* Bottom Navigation */}
-      {/* <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem}>
-          <Icon name="home-outline" size={24} color="#000000" />
-          <Text style={styles.navText}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Icon name="bicycle-outline" size={24} color="#000000" />
-          <Text style={styles.navText}>Deliveries</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.addButton}>
-          <Icon name="add" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Icon name="chatbubble-outline" size={24} color="#000000" />
-          <Text style={styles.navText}>Chat</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Icon name="settings" size={24} color="#800080" />
-          <Text style={[styles.navText, styles.activeNavText]}>Settings</Text>
-        </TouchableOpacity>
-      </View> */}
 
       {/* Password Change Modal */}
       <Modal
@@ -172,8 +366,11 @@ export default function EditProfileScreen() {
                 <TouchableOpacity
                   style={styles.modalButton}
                   onPress={handleEmailSubmit}
+                  disabled={isSendingEmail}
                 >
-                  <Text style={styles.modalButtonText}>Proceed</Text>
+                  <Text style={styles.modalButtonText}>
+                    {isSendingEmail ? "Sending..." : "Proceed"}
+                  </Text>
                 </TouchableOpacity>
               </>
             )}
@@ -191,8 +388,11 @@ export default function EditProfileScreen() {
                 <TouchableOpacity
                   style={styles.modalButton}
                   onPress={handleOtpSubmit}
+                  disabled={isVerifyingOtp}
                 >
-                  <Text style={styles.modalButtonText}>Proceed</Text>
+                  <Text style={styles.modalButtonText}>
+                    {isVerifyingOtp ? "Verifying..." : "Proceed"}
+                  </Text>
                 </TouchableOpacity>
               </>
             )}
@@ -218,14 +418,19 @@ export default function EditProfileScreen() {
                 <TouchableOpacity
                   style={styles.modalButton}
                   onPress={handlePasswordSubmit}
+                  disabled={isResetting}
                 >
-                  <Text style={styles.modalButtonText}>Save</Text>
+                  <Text style={styles.modalButtonText}>
+                    {isResetting ? "Saving..." : "Save"}
+                  </Text>
                 </TouchableOpacity>
               </>
             )}
           </View>
         </View>
       </Modal>
+
+      <Toast />
     </SafeAreaView>
   )
 }
@@ -308,7 +513,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     height: 56,
-    marginBottom: 110,
   },
   saveButtonText: {
     color: "white",
@@ -352,8 +556,9 @@ const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
+    justifyContent: "flex-end",
     alignItems: "center",
+    marginBottom: 10,
   },
   modalContainer: {
     width: "90%",

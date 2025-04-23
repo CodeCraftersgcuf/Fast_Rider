@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: colors.white,
     borderRadius: theme.borderRadius.xl,
-    paddingVertical: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
     margin: "auto",
     shadowColor: colors.black,
     shadowOffset: { width: 0, height: 2 },

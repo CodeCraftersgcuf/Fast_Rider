@@ -34,6 +34,7 @@ export const riderVerification1 = async ({
   token: string;
 }) => {
   // Ensure you're passing the data correctly with the expected properties
+  console.log("Sending request with this data", data, token);
   return await apiCall(
     API_ENDPOINTS.AUTH.VerificationStep1,
     "POST",
@@ -119,6 +120,7 @@ export const verifyPasswordOTP = async (data: {
 export const resetPassword = async (data: {
   email: string;
   password: string;
+  password_confirmation: string;
 }) => {
   return await apiCall(API_ENDPOINTS.AUTH.ResetPassword, "POST", data);
 };

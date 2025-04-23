@@ -15,6 +15,10 @@ const API_ENDPOINTS = {
     VerificationStep3: API_DOMAIN + "/auth/rider/verification/step-3",
   },
   USER: {
+    EditProfile: API_DOMAIN + "/user/update-profile",
+
+    GetFaqs: API_DOMAIN + '/faqs/rider',
+
     SetPin: API_DOMAIN + "/user/set-pin",
     VerifyPin: API_DOMAIN + "/user/verify-pin",
     GetUserDetails: API_DOMAIN + "/user/details",

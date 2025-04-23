@@ -29,6 +29,17 @@ export const changePassword = async ({
   );
 };
 
+export const editProfile = async ({
+  data,
+  token,
+}: {
+  data: any; // Allow FormData here
+  token: string;
+}) => {
+  console.log("Sending request with this: ", data);
+  return await apiCall(API_ENDPOINTS.USER.EditProfile, "POST", data, token);
+};
+
 export const createInternalTransfer = async ({
   data,
   token,
@@ -147,18 +158,18 @@ export const createReplyTicket = async ({
   );
 };
 
-export const editProfile = async ({
-  data,
-  token,
-}: {
-  data: {
-    name: string;
-    phone: string;
-  };
-  token: string;
-}) => {
-  return await apiCall(API_ENDPOINTS.USER.EditProfile, "POST", data, token);
-};
+// export const editProfile = async ({
+//   data,
+//   token,
+// }: {
+//   data: {
+//     name: string;
+//     phone: string;
+//   };
+//   token: string;
+// }) => {
+//   return await apiCall(API_ENDPOINTS.USER.EditProfile, "POST", data, token);
+// };
 
 export const createIndividualAccount = async ({
   data,

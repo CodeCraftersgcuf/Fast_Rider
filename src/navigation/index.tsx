@@ -127,7 +127,6 @@ function SendParcelNavigator() {
 
       <Stack.Screen name="SupportScreen" component={SupportScreen} />
       <Stack.Screen name="NotificationsScreen" component={NotificationsScreen} />
-      <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
       <Stack.Screen name="FAQsScreen" component={FAQsScreen} />
       <Stack.Screen name="WalletScreen" component={WalletScreen} />
       <Stack.Screen name="Verification" component={Verification} />
@@ -161,6 +160,7 @@ function SettingsNavigator() {
       <Stack.Screen name="SupportScreen" component={SupportScreen} />
       <Stack.Screen name="NotificationsScreen" component={NotificationsScreen} />
       <Stack.Screen name="EditProfileScreen" component={EditProfileScreen} />
+
       <Stack.Screen name="FAQsScreen" component={FAQsScreen} />
       <Stack.Screen name="WalletScreen" component={WalletScreen} />
       <Stack.Screen name="Verification" component={Verification} />
@@ -169,10 +169,10 @@ function SettingsNavigator() {
     </SettingsStack.Navigator>
   )
 }
-function TabNavigator() {
+function TabNavigator({ currentRoute }: { currentRoute: string }) {
   const [activeTab, setActiveTab] = React.useState("Home")
   const [isSendParcelVisible, setIsSendParcelVisible] = React.useState(false)
-  const tabNavigation = useNavigation<BottomTabNavigationProp<TabNavigatorParamList>>();
+  const tabNavigation = useNavigation<BottomTabNavigationProp<TabNavigatorParamList>>()
 
   const handleTabPress = (tabName: string) => {
     setActiveTab(tabName)
@@ -187,12 +187,30 @@ function TabNavigator() {
     }
   }, [activeTab])
 
+  const hideTabBarRoutes = [
+    "EditProfileScreen",
+    "Verification",
+    "VerificationForm",
+    "Tier",
+    "SupportScreen",
+    "NotificationsScreen",
+    "FAQsScreen",
+    "WalletScreen",
+    "DeliveryDetails",
+    "RidesDetails",
+    "RideSummary",
+    "RideDetailsMap",
+    "ParcelPaymentProcess"
+  ]
+
+  const shouldShowTabBar = !hideTabBarRoutes.includes(currentRoute)
+
   return (
     <>
       <Tab.Navigator
         screenOptions={{
           headerShown: false,
-          tabBarStyle: { display: "none" },
+          tabBarStyle: { display: "none" }, // Hide default tab bar
         }}
       >
         <Tab.Screen name="Home" component={HomeStack} />
@@ -209,7 +227,7 @@ function TabNavigator() {
         <Tab.Screen name="Settings" component={SettingsNavigator} options={{ tabBarButton: () => null }} />
       </Tab.Navigator>
 
-      {!isSendParcelVisible && (
+      {shouldShowTabBar && !isSendParcelVisible && (
         <View style={styles.tabBarContainer}>
           <TabBar
             activeTab={activeTab}
@@ -223,6 +241,7 @@ function TabNavigator() {
 }
 
 
+
 function AuthStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -233,27 +252,44 @@ function AuthStack() {
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
       <Stack.Screen name="DriverRegistration" component={DriverRegistration} />
       <Stack.Screen name="HelpCenter" component={HelpCenter} />
-
+      
 
     </Stack.Navigator>
   )
 }
 
 export function Navigation() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth()
+  const [currentRoute, setCurrentRoute] = React.useState("")
 
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      onStateChange={(state) => {
+        function getActiveRouteName(state: any): string {
+          const route = state.routes[state.index || 0];
+          if (route.state) {
+            return getActiveRouteName(route.state);
+          }
+          return route.name;
+        }
+
+        const routeName = getActiveRouteName(state);
+        setCurrentRoute(routeName);
+      }}
+    >
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {isAuthenticated ? (
-          <Stack.Screen name="MainApp" component={TabNavigator} />
+          <Stack.Screen name="MainApp">
+            {() => <TabNavigator currentRoute={currentRoute} />}
+          </Stack.Screen>
         ) : (
           <Stack.Screen name="Auth" component={AuthStack} />
         )}
       </Stack.Navigator>
     </NavigationContainer>
-  );
+  )
 }
+
 
 const styles = StyleSheet.create({
   tabBarContainer: {

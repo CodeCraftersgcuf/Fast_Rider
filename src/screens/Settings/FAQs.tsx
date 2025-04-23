@@ -1,49 +1,57 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, TextInput, Modal, ScrollView, Image } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import Icon from "react-native-vector-icons/Ionicons"
 import type { RootStackParamList } from "../../types/navigation"
-import { colors } from "../../constants/colors"
-import { Ionicons } from '@expo/vector-icons';
 
 type FAQsScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "FAQs">
 
+// Code Related to the integration
+import { useQuery } from "@tanstack/react-query"
+import { getFaqs } from "../../utils/queries/accountQueries"
+import { getFromStorage } from "../../utils/storage"
+import Loader from "../../components/Loader"
+
 interface FAQ {
-  id: string
-  question: string
+  id: number
+  title: string
   answer: string
 }
 
 export default function FAQsScreen() {
+  const [token, setToken] = useState<string | null>(null)
   const navigation = useNavigation<FAQsScreenNavigationProp>()
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedFAQ, setSelectedFAQ] = useState<FAQ | null>(null)
 
-  const faqs: FAQ[] = [
-    {
-      id: "1",
-      question: "What is Fast Logistics",
-      answer: "A new and reliable logistics company that caters for your delivery needs"
-    },
-    {
-      id: "2",
-      question: "How to book rides",
-      answer: "You can book rides by selecting your pickup and drop-off locations, choosing a delivery type, and confirming your booking."
-    },
-    {
-      id: "3",
-      question: "How to book rides",
-      answer: "You can book rides by selecting your pickup and drop-off locations, choosing a delivery type, and confirming your booking."
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const fetchedToken = await getFromStorage("authToken")
+      setToken(fetchedToken)
+      console.log("🔹 Retrieved Token:", fetchedToken)
     }
-  ]
+
+    fetchUserData()
+  }, [])
+
+  const { data: faqsData, isLoading } = useQuery({
+    queryKey: ["faqs"],
+    queryFn: () => getFaqs(token as string),
+    enabled: !!token,
+  })
+
+  console.log("The Faqs Data;", faqsData)
+
+  // ✅ Move this above filteredFAQs
+  const faqs: FAQ[] = Array.isArray(faqsData?.data) ? faqsData.data : []
 
   const filteredFAQs = searchQuery.trim() === ""
     ? faqs
-    : faqs.filter(faq =>
-      faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    : faqs.filter((faq) =>
+      faq.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
     )
 
@@ -75,51 +83,23 @@ export default function FAQsScreen() {
           onChangeText={setSearchQuery}
         />
       </View>
-      {/* Video Placeholder */}
-      <View style={styles.videoCard}>
-        <Image
-          source={{ uri: 'https://m.atcdn.co.uk/vms/media/w980/363c3efd17d34f60a7a9dfde34f80ddc.jpg' }}
-          style={styles.videoThumbnail}
-        />
-        <View style={styles.playIcon}>
-          <Ionicons name="play-circle" size={50} color="#fff" />
-        </View>
-      </View>
-      <ScrollView style={styles.faqList}>
-        {filteredFAQs.map((faq) => (
-          <TouchableOpacity
-            key={faq.id}
-            style={styles.faqItem}
-            onPress={() => handleFAQPress(faq)}
-          >
-            <Text style={styles.faqQuestion}>{faq.question}</Text>
-            <Icon name="chevron-forward" size={20} color="#666666" />
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
 
-      {/* Bottom Navigation */}
-      {/* <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navItem}>
-          <Icon name="home-outline" size={24} color="#000000" />
-          <Text style={styles.navText}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Icon name="bicycle-outline" size={24} color="#000000" />
-          <Text style={styles.navText}>Deliveries</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.addButton}>
-          <Icon name="add" size={24} color="#FFFFFF" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Icon name="chatbubble-outline" size={24} color="#000000" />
-          <Text style={styles.navText}>Chat</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navItem}>
-          <Icon name="settings-outline" size={24} color="#800080" />
-          <Text style={[styles.navText, styles.activeNavText]}>Settings</Text>
-        </TouchableOpacity>
-      </View> */}
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <ScrollView style={styles.faqList}>
+          {filteredFAQs.map((faq) => (
+            <TouchableOpacity
+              key={faq.id.toString()}
+              style={styles.faqItem}
+              onPress={() => handleFAQPress(faq)}
+            >
+              <Text style={styles.faqQuestion}>{faq.title}</Text>
+              <Icon name="chevron-forward" size={20} color="#666666" />
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
 
       {/* FAQ Detail Modal */}
       <Modal
@@ -131,12 +111,11 @@ export default function FAQsScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>{selectedFAQ?.question}</Text>
+              <Text style={styles.modalTitle}>{selectedFAQ?.title}</Text>
               <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
                 <Icon name="close" size={20} color="#000000" />
               </TouchableOpacity>
             </View>
-
             <Text style={styles.modalAnswer}>{selectedFAQ?.answer}</Text>
           </View>
         </View>
@@ -144,6 +123,7 @@ export default function FAQsScreen() {
     </SafeAreaView>
   )
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -176,15 +156,16 @@ const styles = StyleSheet.create({
     width: 40,
   },
   searchContainer: {
-    marginTop: 10,
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
     marginHorizontal: 16,
     marginBottom: 16,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
     backgroundColor: "#800080",
+    marginTop: 15
   },
   searchIcon: {
     marginRight: 8,
@@ -284,27 +265,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333333",
     lineHeight: 24,
-  },
-  videoCard: {
-    position: 'relative',
-    borderRadius: 12,
-    overflow: 'hidden',
-    marginBottom: 10,
-    marginHorizontal:19,
-  },
-  videoThumbnail: {
-    width: '100%',
-    height: 180,
-    borderRadius: 12,
-  },
-  playIcon: {
-    position: 'absolute',
-    top: '40%',
-    left: '42%',
-  },
-  videoCaption: {
-    fontSize: 14,
-    marginBottom: 24,
-    color: colors.text.secondary,
   },
 })
