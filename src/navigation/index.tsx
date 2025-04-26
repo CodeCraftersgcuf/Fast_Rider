@@ -74,6 +74,7 @@ import DeliveredSummary from "../screens/SendParcel/DeliveredSummary"
 // Tab Screens
 import DeliveriesScreen from "../screens/Deliveries"
 import ChatScreen from "../screens/Chat"
+import ChatRoomScreen from "../screens/Chat/ChatRoomScreen"
 
 
 import { TabBar } from "../components/TabBar"
@@ -119,6 +120,7 @@ function SendParcelNavigator() {
       />
       <SendParcelStack.Screen name="DeliveredSummary" component={DeliveredSummary} />
       <SendParcelStack.Screen name="Chat" component={ChatScreen} />
+      <SendParcelStack.Screen name="ChatRoom" component={ChatRoomScreen} />
       <Stack.Screen name="RideSummary" component={RideSummary} />
       <Stack.Screen name="ParcelPaymentProcess" component={DeliveredHistory} />
       <Stack.Screen name="RideDetailsMap" component={RideDetailsMap} />
@@ -200,7 +202,8 @@ function TabNavigator({ currentRoute }: { currentRoute: string }) {
     "RidesDetails",
     "RideSummary",
     "RideDetailsMap",
-    "ParcelPaymentProcess"
+    "ParcelPaymentProcess",
+    "ChatRoom"
   ]
 
   const shouldShowTabBar = !hideTabBarRoutes.includes(currentRoute)
@@ -224,6 +227,8 @@ function TabNavigator({ currentRoute }: { currentRoute: string }) {
           }}
         />
         <Tab.Screen name="Chat" component={ChatScreen} />
+        <Tab.Screen name="ChatRoom" component={ChatRoomScreen} />
+
         <Tab.Screen name="Settings" component={SettingsNavigator} options={{ tabBarButton: () => null }} />
       </Tab.Navigator>
 
@@ -252,7 +257,7 @@ function AuthStack() {
       <Stack.Screen name="ChangePassword" component={ChangePassword} />
       <Stack.Screen name="DriverRegistration" component={DriverRegistration} />
       <Stack.Screen name="HelpCenter" component={HelpCenter} />
-      
+
 
     </Stack.Navigator>
   )

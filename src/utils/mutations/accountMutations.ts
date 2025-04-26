@@ -40,6 +40,24 @@ export const editProfile = async ({
   return await apiCall(API_ENDPOINTS.USER.EditProfile, "POST", data, token);
 };
 
+export const sendMessage = async ({
+  data,
+  token,
+}: {  
+  data: {
+    receiver_id: string;
+    message: string;
+  };
+  token: string;
+}) => {
+  return await apiCall(
+    API_ENDPOINTS.USER.SendMessage,
+    "POST",
+    data,
+    token
+  );
+}
+
 export const createInternalTransfer = async ({
   data,
   token,

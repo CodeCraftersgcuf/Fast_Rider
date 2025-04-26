@@ -16,8 +16,13 @@ const API_ENDPOINTS = {
   },
   USER: {
     EditProfile: API_DOMAIN + "/user/update-profile",
-
+    ConnectedUser: API_DOMAIN + "/chat/connected-users",
     GetFaqs: API_DOMAIN + '/faqs/rider',
+
+    ChatInbox: API_DOMAIN + "/chat/connected-users",
+    SingleChatInbox: API_DOMAIN + "/chat/messages",
+    SendMessage: API_DOMAIN + "/chat/send",
+
 
     SetPin: API_DOMAIN + "/user/set-pin",
     VerifyPin: API_DOMAIN + "/user/verify-pin",

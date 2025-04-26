@@ -12,7 +12,21 @@ export const getUserProfile = async (
     token
   );
 };
+export const getChatInbox = async (token: string): Promise<any> => {
+  return await apiCall(API_ENDPOINTS.USER.ChatInbox, "GET", undefined, token);
+};
 
+export const getSingleChatInbox = async (
+  token: string,
+  id: string
+): Promise<any> => {
+  return await apiCall(
+    `${API_ENDPOINTS.USER.SingleChatInbox}/${id}`,
+    "GET",
+    undefined,
+    token
+  );
+};
 export const getFaqs = async (token: string): Promise<any> => {
   return await apiCall(API_ENDPOINTS.USER.GetFaqs, "GET", undefined, token);
 };
