@@ -8,81 +8,49 @@ import { colors } from "../../constants/colors"
 import { useState } from "react"
 import { ContactReceiverPopup } from "../../components/ContactReceiverPopup"
 
-// Define the delivery item type
 interface DeliveryItem {
-  id: string
-  status: "In transit" | "Picked up" | "Order"
-  fromAddress: string
-  toAddress: string
-  orderTime: string
-  deliveryTime: string
+  id: number | string;
+  status: "Delivered" | "In transit" | "Picked up" | "Order" | "ordered";
+  fromAddress: string;
+  toAddress: string;
+  orderTime: string;
+  deliveryTime: string;
+  amount: number;
+  paymentMethod: string;
+  senderAddress: string;
+  receiverAddress: string;
   rider: {
-    name: string
-    avatar: any
-    rating: number
-  }
+    name: string;
+    avatar: any;
+    rating: number;
+  };
 }
 
-const ActiveDeliveries = () => {
-  const navigation = useNavigation()
+
+interface ActiveDeliveriesProps {
+  deliveries: DeliveryItem[];
+}
+
+const ActiveDeliveries = ({ deliveries }: ActiveDeliveriesProps) => {
+  const navigation = useNavigation();
   const [customerDetailModal, setCustomerDetailModal] = useState(false);
 
   const onChatPress = () => {
-    console.log("It clicked")
+    console.log("Chat Clicked");
     navigation.navigate("Add", {
       screen: "Chat",
       params: { id: "2" },
-    })
-  }
-
-
-  // Sample data
-  const deliveries: DeliveryItem[] = [
-    {
-      id: "ORD-12ESCJK3K",
-      status: "In transit",
-      fromAddress: "No 1, abcd street...",
-      toAddress: "No 1, abcd street, saki....",
-      senderAddress: "No 1, abcd street...",  // Added sender address
-      receiverAddress: "No 1, abcd street, saki....",  // Added receiver address
-      orderTime: "11:24 AM",
-      deliveryTime: "01:22 PM",
-      amount: 5000, // Added amount
-      paymentMethod: "Credit Card", // Added payment method
-      rider: {
-        name: "Maleek Oladimeji",
-        avatar: require("../../assets/images/pp.png"),
-        rating: 5,
-      },
-    },
-    {
-      id: "ORD-21JWD23JFEKNK2WNRK",
-      status: "Picked up",
-      fromAddress: "No 1, abcd street...",
-      toAddress: "No 1, abcd street, saki....",
-      senderAddress: "No 1, abcd street...",
-      receiverAddress: "No 1, abcd street, saki....",
-      orderTime: "11:24 AM",
-      deliveryTime: "01:22 PM",
-      amount: 3200,
-      paymentMethod: "Cash",
-      rider: {
-        name: "Afeez Wale",
-        avatar: require("../../assets/images/pp.png"),
-        rating: 4,
-      },
-    },
-  ];
-
-  const handleDeliveryPress = (delivery: DeliveryItem) => {
-    // Navigate to RideDetailsMap screen with the delivery details
-    navigation.navigate("Add", {
-      screen: "RideDetailsMap",
-      params: { rider: delivery, delivery: true } // Corrected structure
     });
   };
 
-  const renderDeliveryItem = ({ item }: { item: DeliveryItem }) => (
+  const handleDeliveryPress = (delivery: DeliveryItem) => {
+    navigation.navigate("Add", {
+      screen: "RideDetailsMap",
+      params: { rider: delivery, delivery: true },
+    });
+  };
+
+    const renderDeliveryItem = ({ item }: { item: DeliveryItem }) => (
     <>
       <TouchableOpacity style={styles.deliveryCard} onPress={() => handleDeliveryPress(item)}>
         <View style={styles.deliveryHeader}>
@@ -188,8 +156,9 @@ const ActiveDeliveries = () => {
         onCall={() => console.log("Calling the Customer...")}
       />
     </>
-  )
-}
+  );
+};
+
 
 const styles = StyleSheet.create({
   listContainer: {

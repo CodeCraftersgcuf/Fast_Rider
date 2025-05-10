@@ -23,6 +23,7 @@ const API_ENDPOINTS = {
     SingleChatInbox: API_DOMAIN + "/chat/messages",
     SendMessage: API_DOMAIN + "/chat/send",
 
+    DeliveryHistory: API_DOMAIN + "/history/rider",
 
     SetPin: API_DOMAIN + "/user/set-pin",
     VerifyPin: API_DOMAIN + "/user/verify-pin",

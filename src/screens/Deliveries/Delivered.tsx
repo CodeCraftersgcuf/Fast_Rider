@@ -1,5 +1,4 @@
 
-"use client"
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Image } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import Icon from "react-native-vector-icons/Ionicons"
@@ -9,65 +8,43 @@ import { useState } from "react"
 
 // Define the delivery item type
 interface DeliveryItem {
-  id: string
-  status: "Delivered" | "In transit" | "Picked up" | "Order"
-  fromAddress: string
-  toAddress: string
-  orderTime: string
-  deliveryTime: string
+  id: number | string;
+  status: "Delivered" | "In transit" | "Picked up" | "Order" | "ordered";
+  fromAddress: string;
+  toAddress: string;
+  orderTime: string;
+  deliveryTime: string;
+  amount: number;
+  paymentMethod: string;
+  senderAddress: string;
+  receiverAddress: string;
   rider: {
-    name: string
-    avatar: any
-    rating: number
-  }
+    name: string;
+    avatar: any;
+    rating: number;
+  };
 }
 
-const DeliveredDeliveries = () => {
-  const navigation = useNavigation()
+
+interface DeliveredDeliveriesProps {
+  deliveries: DeliveryItem[];
+}
+
+const DeliveredDeliveries = ({ deliveries }: DeliveredDeliveriesProps) => {
+  const navigation = useNavigation();
   const [customerDetailModal, setCustomerDetailModal] = useState(false);
 
   const onChatPress = () => {
-    console.log("It clicked")
     navigation.navigate("Add", {
       screen: "Chat",
       params: { id: "2" },
-    })
-  }
-  // Sample data
-  const deliveries: DeliveryItem[] = [
-    {
-      id: "ORD-12ESCJK3K",
-      status: "Delivered",
-      fromAddress: "No 1, abcd street...",
-      toAddress: "No 1, abcd street....",
-      orderTime: "11:24 AM",
-      deliveryTime: "01:22 PM",
-      rider: {
-        name: "Maleek Oladimeji",
-        avatar: require("../../assets/images/pp.png"),
-        rating: 5,
-      },
-    },
-    {
-      id: "ORD-12ESCJK3K",
-      status: "Delivered",
-      fromAddress: "No 1, abcd street...",
-      toAddress: "No 1, abcd street....",
-      orderTime: "11:24 AM",
-      deliveryTime: "01:22 PM",
-      rider: {
-        name: "Maleek Oladimeji",
-        avatar: require("../../assets/images/pp.png"),
-        rating: 5,
-      },
-    },
-  ]
+    });
+  };
 
   const handleDeliveryPress = (delivery: DeliveryItem) => {
-    // Navigate to DeliveryDetails screen with the delivery ID
     navigation.navigate("Add", {
       screen: "DeliveryDetails",
-      params: { deliveryId: delivery.id } // Corrected structure
+      params: { deliveryId: delivery.id },
     });
   };
 
@@ -170,8 +147,8 @@ const DeliveredDeliveries = () => {
         onCall={() => console.log("Calling the Customer...")}
       />
     </>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   listContainer: {

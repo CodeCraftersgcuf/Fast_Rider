@@ -2,6 +2,20 @@ import axios from "axios";
 import { apiCall } from "../customApiCall";
 import { API_ENDPOINTS } from "../../../apiConfig";
 
+
+
+export const getRiderDeiliveryHistory = async (
+  token: string,
+): Promise<any> => {
+  return await apiCall(
+    API_ENDPOINTS.USER.DeliveryHistory,
+    "GET",
+    undefined,
+    token
+  );
+};
+
+
 export const getUserProfile = async (
   token: string
 ): Promise<IUserProfileResponse> => {

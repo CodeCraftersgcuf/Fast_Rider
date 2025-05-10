@@ -81,6 +81,7 @@ export default function SearchRidersScreen() {
           },
         })}
       />
+      
       <DeliveryFeeModal
         visible={showFeeModal}
         amount={amount}
